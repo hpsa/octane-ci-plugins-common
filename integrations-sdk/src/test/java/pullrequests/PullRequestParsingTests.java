@@ -13,9 +13,9 @@ public class PullRequestParsingTests {
     @Test
     public void testBitbucketServerParsing() throws IOException {
         String json = readResourceAsString("bitbucketServerPullRequests.json");
-        com.hp.octane.integrations.services.pullrequests.bitbucketserver.pojo.EntityCollection<com.hp.octane.integrations.services.pullrequests.bitbucketserver.pojo.PullRequest> list = com.hp.octane.integrations.services.pullrequests.bitbucketserver.JsonConverter.convertCollection(
+        com.hp.octane.integrations.services.pullrequestsandbranches.bitbucketserver.pojo.EntityCollection<com.hp.octane.integrations.services.pullrequestsandbranches.bitbucketserver.pojo.PullRequest> list = com.hp.octane.integrations.services.pullrequestsandbranches.bitbucketserver.JsonConverter.convertCollection(
                 json,
-                com.hp.octane.integrations.services.pullrequests.bitbucketserver.pojo.PullRequest.class);
+                com.hp.octane.integrations.services.pullrequestsandbranches.bitbucketserver.pojo.PullRequest.class);
         Assert.assertEquals(11, list.getSize());
 
     }
@@ -23,14 +23,14 @@ public class PullRequestParsingTests {
     @Test
     public void testGithubServerParsing() throws IOException {
         String json = readResourceAsString("githubServerPullRequests.json");
-        List<com.hp.octane.integrations.services.pullrequests.github.pojo.PullRequest> list = com.hp.octane.integrations.services.pullrequests.github.JsonConverter.convertCollection(json, com.hp.octane.integrations.services.pullrequests.github.pojo.PullRequest.class);
+        List<com.hp.octane.integrations.services.pullrequestsandbranches.github.pojo.PullRequest> list = com.hp.octane.integrations.services.pullrequestsandbranches.github.JsonConverter.convertCollection(json, com.hp.octane.integrations.services.pullrequestsandbranches.github.pojo.PullRequest.class);
         Assert.assertEquals(5, list.size());
     }
 
     @Test
     public void testGithubCloudParsing() throws IOException {
         String json = readResourceAsString("githubCloudPullRequests.json");
-        List<com.hp.octane.integrations.services.pullrequests.github.pojo.PullRequest> list = com.hp.octane.integrations.services.pullrequests.github.JsonConverter.convertCollection(json, com.hp.octane.integrations.services.pullrequests.github.pojo.PullRequest.class);
+        List<com.hp.octane.integrations.services.pullrequestsandbranches.github.pojo.PullRequest> list = com.hp.octane.integrations.services.pullrequestsandbranches.github.JsonConverter.convertCollection(json, com.hp.octane.integrations.services.pullrequestsandbranches.github.pojo.PullRequest.class);
         Assert.assertEquals(30, list.size());
     }
 

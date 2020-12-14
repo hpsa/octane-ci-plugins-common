@@ -25,7 +25,7 @@ import com.hp.octane.integrations.services.events.EventsService;
 import com.hp.octane.integrations.services.logging.LoggingService;
 import com.hp.octane.integrations.services.logs.LogsService;
 import com.hp.octane.integrations.services.pipelines.PipelineContextService;
-import com.hp.octane.integrations.services.pullrequests.PullRequestService;
+import com.hp.octane.integrations.services.pullrequestsandbranches.PullRequestAndBranchService;
 import com.hp.octane.integrations.services.queueing.QueueingService;
 import com.hp.octane.integrations.services.rest.RestService;
 import com.hp.octane.integrations.services.scmdata.SCMDataService;
@@ -73,7 +73,7 @@ final class OctaneClientImpl implements OctaneClient {
     private final TasksProcessor tasksProcessor;
     private final TestsService testsService;
     private final VulnerabilitiesService vulnerabilitiesService;
-    private final PullRequestService pullRequestService;
+    private final PullRequestAndBranchService pullRequestAndBranchService;
     private final SCMDataService scmDataService;
     private final Thread shutdownHook;
     private boolean isShutdownHookActivated;
@@ -125,7 +125,7 @@ final class OctaneClientImpl implements OctaneClient {
         VulnerabilitiesToolService[] vulnerabilitiesToolServices = {sscService, sonarVulnerabilitiesService, fodService};
         vulnerabilitiesService = VulnerabilitiesService.newInstance(queueingService, vulnerabilitiesToolServices, configurer, restService, configurationService);
 
-        pullRequestService = PullRequestService.newInstance(configurer, restService);
+        pullRequestAndBranchService = PullRequestAndBranchService.newInstance(configurer, restService);
 
         scmDataService = SCMDataService.newInstance(queueingService, configurer, restService, configurationService, eventsService);
 
@@ -231,8 +231,8 @@ final class OctaneClientImpl implements OctaneClient {
     }
 
     @Override
-    public PullRequestService getPullRequestService() {
-        return pullRequestService;
+    public PullRequestAndBranchService getPullRequestAndBranchService() {
+        return pullRequestAndBranchService;
     }
 
 
