@@ -48,4 +48,9 @@ public class GithubCloudFetchHandler extends GithubV3FetchHandler {
         repoName = repoName.substring(0, repoName.length() - ".git".length());
         return String.format("https://api.github.com/repos/%s/%s", user, repoName);
     }
+
+    @Override
+    protected String getApiPath(String clonePath) {
+        return "https://api.github.com";
+    }
 }

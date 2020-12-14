@@ -7,11 +7,12 @@ import com.hp.octane.integrations.dto.connectivity.OctaneResponse;
 import com.hp.octane.integrations.dto.scm.SCMRepository;
 import com.hp.octane.integrations.dto.scm.SCMType;
 import com.hp.octane.integrations.services.pullrequestsandbranches.factory.CommitUserIdPicker;
-import com.hp.octane.integrations.services.pullrequestsandbranches.factory.PullRequestFetchParameters;
-import com.hp.octane.integrations.services.pullrequestsandbranches.factory.FetchUtils;
 import com.hp.octane.integrations.services.pullrequestsandbranches.factory.FetchHandler;
+import com.hp.octane.integrations.services.pullrequestsandbranches.factory.FetchUtils;
+import com.hp.octane.integrations.services.pullrequestsandbranches.factory.PullRequestFetchParameters;
 import com.hp.octane.integrations.services.pullrequestsandbranches.github.pojo.*;
 import com.hp.octane.integrations.services.pullrequestsandbranches.rest.authentication.AuthenticationStrategy;
+import org.apache.http.HttpStatus;
 
 import java.io.IOException;
 import java.time.Instant;
@@ -38,8 +39,10 @@ public abstract class GithubV3FetchHandler extends FetchHandler {
 
         List<com.hp.octane.integrations.dto.scm.PullRequest> result = new ArrayList<>();
         String baseUrl = getRepoApiPath(parameters.getRepoUrl());
+        String apiUrl = getApiPath(parameters.getRepoUrl());
         logConsumer.accept(this.getClass().getSimpleName() + " handler, Base url : " + baseUrl);
         pingRepository(baseUrl, logConsumer);
+        getRateLimitationInfo(apiUrl, logConsumer);
 
         String pullRequestsUrl = baseUrl + "/pulls?state=all";
         logConsumer.accept("Pull requests url : " + pullRequestsUrl);
@@ -126,9 +129,22 @@ public abstract class GithubV3FetchHandler extends FetchHandler {
         } else {
             logConsumer.accept("No new/updated PR is found.");
         }
+
+        getRateLimitationInfo(apiUrl, logConsumer);
         return result;
     }
 
+    private void getRateLimitationInfo(String baseUrl, Consumer<String> logConsumer) throws IOException {
+        String rateUrl = baseUrl + "/rate_limit";
+        OctaneRequest request = dtoFactory.newDTO(OctaneRequest.class).setUrl(rateUrl).setMethod(HttpMethod.GET);
+        OctaneResponse response = restClient.executeRequest(request);
+        if (response.getStatus() == HttpStatus.SC_OK && response.getHeaders().containsKey("X-Ratelimit-Limit")) {
+            logConsumer.accept("X-Ratelimit-Limit       : " + response.getHeaders().get("X-Ratelimit-Limit"));
+            logConsumer.accept("X-Ratelimit-Remaining   : " + response.getHeaders().get("X-Ratelimit-Remaining"));
+            logConsumer.accept("X-Ratelimit-Used        : " + response.getHeaders().get("X-Ratelimit-Used"));
+            logConsumer.accept("X-Ratelimit-Reset       : " + response.getHeaders().get("X-Ratelimit-Reset"));
+        }
+    }
 
     public static Long convertDateToLong(String dateStr) {
         if (dateStr == null || dateStr.isEmpty()) {

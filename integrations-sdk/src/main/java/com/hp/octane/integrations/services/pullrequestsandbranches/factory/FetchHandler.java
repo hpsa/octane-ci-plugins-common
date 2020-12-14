@@ -42,15 +42,17 @@ public abstract class FetchHandler {
 
     protected abstract String getRepoApiPath(String clonePath);
 
+    protected abstract String getApiPath(String clonePath);
+
     protected abstract String parseRequestError(OctaneResponse response);
 
-    public boolean pingRepository(String repoApiBaseUrl, Consumer<String> logConsumer) throws IOException {
+    public void pingRepository(String repoApiBaseUrl, Consumer<String> logConsumer) throws IOException {
         OctaneRequest request = dtoFactory.newDTO(OctaneRequest.class).setUrl(repoApiBaseUrl).setMethod(HttpMethod.GET);
         try {
             OctaneResponse response = restClient.executeRequest(request);
             if (response.getStatus() == HttpStatus.SC_OK) {
                 logConsumer.accept("Ping repository : Ok");
-                return true;
+                return;
             }
             logConsumer.accept("Ping repository : " + response.getStatus() + "; " + parseRequestError(response));
             if (response.getStatus() == HttpStatus.SC_NOT_FOUND) {

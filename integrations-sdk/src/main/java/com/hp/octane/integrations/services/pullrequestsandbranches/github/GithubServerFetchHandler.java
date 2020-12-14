@@ -38,4 +38,13 @@ public class GithubServerFetchHandler extends GithubV3FetchHandler {
         result = result.substring(0, result.length() - ".git".length());
         return result;
     }
+
+    @Override
+    protected String getApiPath(String repoHttpCloneUrl) {
+        //   https://github.houston.softwaregrp.net:443/MQM/mqm.git=>https://github.houston.softwaregrp.net/api/v3
+        int repoSlashIndex = repoHttpCloneUrl.lastIndexOf("/");
+        int teamSlashIndex = repoHttpCloneUrl.substring(0, repoSlashIndex).lastIndexOf("/");
+        String result = repoHttpCloneUrl.substring(0, teamSlashIndex) + "/api/v3";
+        return result;
+    }
 }
