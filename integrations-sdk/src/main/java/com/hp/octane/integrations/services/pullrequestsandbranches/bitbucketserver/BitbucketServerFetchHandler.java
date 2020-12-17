@@ -253,6 +253,11 @@ public class BitbucketServerFetchHandler extends FetchHandler {
     }
 
     @Override
+    protected String getApiPath(String clonePath) {
+        return null;
+    }
+
+    @Override
     protected String parseRequestError(OctaneResponse response) {
         return JsonConverter.getErrorMessage(response.getBody());
     }
