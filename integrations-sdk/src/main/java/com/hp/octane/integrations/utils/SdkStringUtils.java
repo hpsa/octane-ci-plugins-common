@@ -16,6 +16,7 @@
 
 package com.hp.octane.integrations.utils;
 
+import java.time.Instant;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;

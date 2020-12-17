@@ -16,6 +16,7 @@
 package com.hp.octane.integrations.services.pullrequestsandbranches.github.pojo;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.hp.octane.integrations.services.pullrequestsandbranches.factory.FetchUtils;
 import com.hp.octane.integrations.services.pullrequestsandbranches.github.GithubV3FetchHandler;
 
 import java.util.List;
@@ -57,7 +58,7 @@ public class Commit extends Entity implements SupportUpdatedTime {
     @Override
     public long getUpdatedTime() {
         if (updatedTime == UPDATE_TIME_DEFAULT) {
-            Long l = GithubV3FetchHandler.convertDateToLong(getCommit().getCommitter().getDate());
+            Long l = FetchUtils.convertISO8601DateStringToLong(getCommit().getCommitter().getDate());
             updatedTime = l == null ? 0 : l;
         }
         return updatedTime;

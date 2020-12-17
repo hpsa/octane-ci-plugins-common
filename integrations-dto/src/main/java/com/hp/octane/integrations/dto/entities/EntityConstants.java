@@ -34,13 +34,21 @@ public class EntityConstants {
     public static class ScmRepository extends Base {
         public static final String COLLECTION_NAME = "scm_repositories";
         public static final String ENTITY_NAME = "scm_repository";
-        public static final String BRANCH = "branch";
-        public static final String PARENT = "repository";
+        public static final String BRANCH_FIELD = "branch";
+        public static final String PARENT_FIELD = "repository";
+
+        public static final String IS_MERGED_FIELD = "is_merged";
+        public static final String IS_DELETED_FIELD = "is_deleted";
+        public static final String LAST_COMMIT_SHA_FIELD = "last_commit_sha";
+        public static final String LAST_COMMIT_TIME_FIELD = "last_commit_time";
+        public static final String SCM_USER_FIELD = "user";
+
     }
 
     public static class ScmRepositoryRoot extends Base {
         public static final String COLLECTION_NAME = "scm_repository_roots";
         public static final String ENTITY_NAME = "scm_repository_root";
+        public static final String URL_FIELD = "url";
     }
 
     public static class Executors extends Base {

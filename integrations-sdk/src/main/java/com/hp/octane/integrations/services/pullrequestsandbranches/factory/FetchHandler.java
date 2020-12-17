@@ -19,6 +19,7 @@ import com.hp.octane.integrations.dto.DTOFactory;
 import com.hp.octane.integrations.dto.connectivity.HttpMethod;
 import com.hp.octane.integrations.dto.connectivity.OctaneRequest;
 import com.hp.octane.integrations.dto.connectivity.OctaneResponse;
+import com.hp.octane.integrations.dto.scm.Branch;
 import com.hp.octane.integrations.dto.scm.PullRequest;
 import com.hp.octane.integrations.services.pullrequestsandbranches.rest.GeneralRestClient;
 import com.hp.octane.integrations.services.pullrequestsandbranches.rest.authentication.AuthenticationStrategy;
@@ -40,9 +41,13 @@ public abstract class FetchHandler {
 
     public abstract List<PullRequest> fetchPullRequests(PullRequestFetchParameters parameters, CommitUserIdPicker commitUserIdPicker, Consumer<String> logger) throws IOException;
 
+    public abstract List<Branch> fetchBranches(BranchFetchParameters parameters, Consumer<String> logger) throws IOException;
+
     protected abstract String getRepoApiPath(String clonePath);
 
     protected abstract String parseRequestError(OctaneResponse response);
+
+    protected abstract String getClonePathSSH (String httpClonePath);
 
     public boolean pingRepository(String repoApiBaseUrl, Consumer<String> logConsumer) throws IOException {
         OctaneRequest request = dtoFactory.newDTO(OctaneRequest.class).setUrl(repoApiBaseUrl).setMethod(HttpMethod.GET);

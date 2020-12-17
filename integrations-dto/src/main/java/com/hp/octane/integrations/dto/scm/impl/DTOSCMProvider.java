@@ -35,6 +35,7 @@ public final class DTOSCMProvider extends DTOInternalProviderBase {
 		dtoPairs.put(SCMData.class, SCMDataImpl.class);
 		dtoPairs.put(SCMFileBlame.class, SCMFileBlameImpl.class);
 		dtoPairs.put(PullRequest.class, PullRequestImpl.class);
+		dtoPairs.put(Branch.class, BranchImpl.class);
 	}
 
 	protected <T extends DTOBase> T instantiateDTO(Class<T> targetType) throws InstantiationException, IllegalAccessException {

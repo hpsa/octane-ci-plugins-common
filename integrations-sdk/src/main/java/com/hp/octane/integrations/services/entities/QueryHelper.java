@@ -60,6 +60,10 @@ public class QueryHelper {
         return name + "=" + value;
     }
 
+    public static String condition(String name, boolean value) {
+        return name + "=" + value;
+    }
+
     public static String orConditions(String... conditions) {
         return "(" + Arrays.stream(conditions).map(c -> "(" + c + ")").collect(Collectors.joining("||")) + ")";
     }

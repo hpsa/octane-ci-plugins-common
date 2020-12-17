@@ -16,13 +16,17 @@
 package com.hp.octane.integrations.services.pullrequestsandbranches.github;
 
 
+import com.hp.octane.integrations.dto.scm.PullRequest;
+import com.hp.octane.integrations.services.pullrequestsandbranches.factory.BranchFetchParameters;
+import com.hp.octane.integrations.services.pullrequestsandbranches.factory.CommitUserIdPicker;
 import com.hp.octane.integrations.services.pullrequestsandbranches.rest.authentication.AuthenticationStrategy;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Consumer;
 
 public class GithubCloudFetchHandler extends GithubV3FetchHandler {
-
 
     public GithubCloudFetchHandler(AuthenticationStrategy authenticationStrategy) {
         super(authenticationStrategy);
@@ -47,5 +51,12 @@ public class GithubCloudFetchHandler extends GithubV3FetchHandler {
         String repoName = parts.get(parts.size() - 1);
         repoName = repoName.substring(0, repoName.length() - ".git".length());
         return String.format("https://api.github.com/repos/%s/%s", user, repoName);
+    }
+
+    @Override
+    protected String getClonePathSSH(String httpClonePath) {
+        //git@github.com:radislavB/simple-tests.git
+        //https://github.com/radislavB/simple-tests.git
+        return httpClonePath.replace("https://github.com/", "git@github.com:");
     }
 }

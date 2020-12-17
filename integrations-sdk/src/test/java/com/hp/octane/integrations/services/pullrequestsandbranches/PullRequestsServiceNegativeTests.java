@@ -22,21 +22,21 @@ public class PullRequestsServiceNegativeTests {
 
 	@Test(expected = IllegalArgumentException.class)
 	public void testA() {
-		new PullRequestAndBranchServiceImpl(null, null);
+		new PullRequestAndBranchServiceImpl(null, null, null);
 	}
 
 	@Test(expected = ClassCastException.class)
 	public void testB() {
-		new PullRequestAndBranchServiceImpl((OctaneSDK.SDKServicesConfigurer) new Object(), null);
+		new PullRequestAndBranchServiceImpl((OctaneSDK.SDKServicesConfigurer) new Object(), null, null);
 	}
 
 	@Test(expected = IllegalArgumentException.class)
 	public void testC() {
-		PullRequestAndBranchService.newInstance(null, null);
+		PullRequestAndBranchService.newInstance(null, null, null);
 	}
 
 	@Test(expected = ClassCastException.class)
 	public void testD() {
-		PullRequestAndBranchService.newInstance((OctaneSDK.SDKServicesConfigurer) new Object(), null);
+		PullRequestAndBranchService.newInstance((OctaneSDK.SDKServicesConfigurer) new Object(), null, null);
 	}
 }

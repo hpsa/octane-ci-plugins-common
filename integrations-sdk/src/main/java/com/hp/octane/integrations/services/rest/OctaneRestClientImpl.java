@@ -85,8 +85,6 @@ final class OctaneRestClientImpl implements OctaneRestClient {
 	private static final DTOFactory dtoFactory = DTOFactory.getInstance();
 
 	private static final Set<Integer> AUTHENTICATION_ERROR_CODES = Stream.of(HttpStatus.SC_UNAUTHORIZED).collect(Collectors.toSet());
-	private static final String CLIENT_TYPE_HEADER = "HPECLIENTTYPE";
-	private static final String CLIENT_TYPE_VALUE = "HPE_CI_CLIENT";
 	private static final String LWSSO_COOKIE_NAME = "LWSSO_COOKIE_KEY";
 	private static final String AUTHENTICATION_URI = "authentication/sign_in";
 	private static final int MAX_TOTAL_CONNECTIONS = 20;

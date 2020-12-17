@@ -17,6 +17,7 @@ package com.hp.octane.integrations.services.pullrequestsandbranches.factory;
 
 import com.hp.octane.integrations.utils.SdkStringUtils;
 
+import java.time.Instant;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -55,6 +56,29 @@ public class FetchUtils {
             }
             return false;
         }
+    }
+
+
+    /**
+     * Parse ISO8601DateString (format:YYYY-MM-DDTHH:MM:SSZ) to long
+     * @param dateStr
+     * @return
+     */
+    public static Long convertISO8601DateStringToLong(String dateStr) {
+        if (dateStr == null || dateStr.isEmpty()) {
+            return null;
+        }
+        //All timestamps return in ISO 8601 format:YYYY-MM-DDTHH:MM:SSZ
+        return Instant.parse(dateStr).getEpochSecond() * 1000;
+    }
+
+    /**
+     * return in ISO 8601 format:YYYY-MM-DDTHH:MM:SSZ
+     * @param date
+     * @return
+     */
+    public static String convertLongToISO8601DateString(long date) {
+        return Instant.ofEpochMilli(date).toString();
     }
 
 }

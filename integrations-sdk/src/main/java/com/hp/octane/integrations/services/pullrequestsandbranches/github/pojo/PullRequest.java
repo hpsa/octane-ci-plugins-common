@@ -17,6 +17,7 @@ package com.hp.octane.integrations.services.pullrequestsandbranches.github.pojo;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonSetter;
+import com.hp.octane.integrations.services.pullrequestsandbranches.factory.FetchUtils;
 import com.hp.octane.integrations.services.pullrequestsandbranches.github.GithubV3FetchHandler;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -84,7 +85,7 @@ public class PullRequest extends Entity implements SupportUpdatedTime {
     }
 
     public long getUpdatedTime() {
-        Long l = GithubV3FetchHandler.convertDateToLong(updatedAt);
+        Long l = FetchUtils.convertISO8601DateStringToLong(updatedAt);
         return l == null ? 0 : l;
     }
 

@@ -125,7 +125,7 @@ final class OctaneClientImpl implements OctaneClient {
         VulnerabilitiesToolService[] vulnerabilitiesToolServices = {sscService, sonarVulnerabilitiesService, fodService};
         vulnerabilitiesService = VulnerabilitiesService.newInstance(queueingService, vulnerabilitiesToolServices, configurer, restService, configurationService);
 
-        pullRequestAndBranchService = PullRequestAndBranchService.newInstance(configurer, restService);
+        pullRequestAndBranchService = PullRequestAndBranchService.newInstance(configurer, restService, entitiesService);
 
         scmDataService = SCMDataService.newInstance(queueingService, configurer, restService, configurationService, eventsService);
 

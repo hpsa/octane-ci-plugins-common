@@ -24,6 +24,9 @@ import java.io.IOException;
 
 public interface OctaneRestClient extends HasMetrics {
 
+	String CLIENT_TYPE_HEADER = "HPECLIENTTYPE";
+	String CLIENT_TYPE_VALUE = "HPE_CI_CLIENT";
+
 	/**
 	 * Executes Octane server oriented request based on the pre-configuration
 	 *

@@ -16,7 +16,12 @@
 package com.hp.octane.integrations.services.pullrequestsandbranches;
 
 import com.hp.octane.integrations.OctaneSDK;
+import com.hp.octane.integrations.dto.entities.Entity;
+import com.hp.octane.integrations.dto.scm.Branch;
 import com.hp.octane.integrations.dto.scm.PullRequest;
+import com.hp.octane.integrations.services.entities.EntitiesService;
+import com.hp.octane.integrations.services.pullrequestsandbranches.factory.BranchFetchParameters;
+import com.hp.octane.integrations.services.pullrequestsandbranches.factory.CommitUserIdPicker;
 import com.hp.octane.integrations.services.pullrequestsandbranches.factory.PullRequestFetchParameters;
 import com.hp.octane.integrations.services.rest.RestService;
 
@@ -32,13 +37,16 @@ public interface PullRequestAndBranchService {
      *
      * @param configurer  SDK services configurer object
      * @param restService Rest Service
+     * @param entitiesService
      * @return initialized service
      */
-    static PullRequestAndBranchService newInstance(OctaneSDK.SDKServicesConfigurer configurer, RestService restService) {
-        return new PullRequestAndBranchServiceImpl(configurer, restService);
+    static PullRequestAndBranchService newInstance(OctaneSDK.SDKServicesConfigurer configurer, RestService restService, EntitiesService entitiesService) {
+        return new PullRequestAndBranchServiceImpl(configurer, restService, entitiesService);
     }
 
     void sendPullRequests(List<PullRequest> pullRequests, String workspaceId, PullRequestFetchParameters pullRequestFetchParameters, Consumer<String> logConsumer) throws IOException;
 
-    long getLastUpdateTime(String workspaceId, String repoUrl);
+    long getPullRequestLastUpdateTime(String workspaceId, String repoUrl);
+
+    void syncBranchesToOctane(List<Branch> ciServerBranches, BranchFetchParameters fp, Long workspaceId, CommitUserIdPicker idPicker, Consumer<String> logConsumer);
 }

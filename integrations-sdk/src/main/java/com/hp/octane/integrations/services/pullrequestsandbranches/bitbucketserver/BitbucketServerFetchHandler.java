@@ -14,16 +14,14 @@
  */
 package com.hp.octane.integrations.services.pullrequestsandbranches.bitbucketserver;
 
+import com.hp.octane.integrations.dto.DTOFactory;
 import com.hp.octane.integrations.dto.connectivity.HttpMethod;
 import com.hp.octane.integrations.dto.connectivity.OctaneRequest;
 import com.hp.octane.integrations.dto.connectivity.OctaneResponse;
 import com.hp.octane.integrations.dto.scm.SCMRepository;
 import com.hp.octane.integrations.dto.scm.SCMType;
 import com.hp.octane.integrations.services.pullrequestsandbranches.bitbucketserver.pojo.*;
-import com.hp.octane.integrations.services.pullrequestsandbranches.factory.CommitUserIdPicker;
-import com.hp.octane.integrations.services.pullrequestsandbranches.factory.PullRequestFetchParameters;
-import com.hp.octane.integrations.services.pullrequestsandbranches.factory.FetchUtils;
-import com.hp.octane.integrations.services.pullrequestsandbranches.factory.FetchHandler;
+import com.hp.octane.integrations.services.pullrequestsandbranches.factory.*;
 import com.hp.octane.integrations.services.pullrequestsandbranches.rest.authentication.AuthenticationStrategy;
 import org.apache.http.HttpStatus;
 
@@ -117,6 +115,47 @@ public class BitbucketServerFetchHandler extends FetchHandler {
         return result;
     }
 
+    @Override
+    public List<com.hp.octane.integrations.dto.scm.Branch> fetchBranches(BranchFetchParameters parameters, Consumer<String> logConsumer) throws IOException {
+        // List<com.hp.octane.integrations.dto.scm.> result = new ArrayList<>();
+        String baseUrl = getRepoApiPath(parameters.getRepoUrl());
+        logConsumer.accept("BitbucketServerRestHandler, Base url : " + baseUrl);
+        pingRepository(baseUrl, logConsumer);
+
+        String branchesUrl = baseUrl + "/branches?&details=true&&orderBy=MODIFICATION";
+        logConsumer.accept("Branches url : " + branchesUrl);
+
+        List<Branch> branches = getPagedEntities(branchesUrl, Branch.class, parameters.getPageSize(), Integer.MAX_VALUE, null);
+        List<Pattern> searchPatterns = FetchUtils.buildPatterns(parameters.getFilter());
+
+        List<com.hp.octane.integrations.dto.scm.Branch> filteredBranches = branches.stream()
+                .filter(br -> FetchUtils.isBranchMatch(searchPatterns, br.getDisplayId()))
+                .map((br -> convertToDTOBranch(br)))
+                .collect(Collectors.toList());
+        logConsumer.accept(String.format("Found %d branches, while %d are matching filter", branches.size(), filteredBranches.size()));
+
+        if (!filteredBranches.isEmpty()) {
+            logConsumer.accept("Fetching branches is done");
+        } else {
+            logConsumer.accept("No new/updated  branch is found.");
+        }
+
+        return filteredBranches;
+    }
+
+    private com.hp.octane.integrations.dto.scm.Branch convertToDTOBranch(Branch branch) {
+        BranchMetadataLatestCommit latest = branch.getMetadata().getLatestCommit();
+        boolean isMerged = branch.getIsDefault() ? true : (branch.getMetadata().getAheadBehind().getAhead() == 0);
+        com.hp.octane.integrations.dto.scm.Branch branchDTO = DTOFactory.getInstance().newDTO(com.hp.octane.integrations.dto.scm.Branch.class)
+                .setName(branch.getDisplayId())
+                .setLastCommitSHA(latest.getId())
+                .setLastCommitTime(latest.getCommitterTimestamp())
+                .setLastCommiterName(latest.getCommitter().getName())
+                .setLastCommiterEmail(latest.getCommitter().getEmailAddress())
+                .setIsMerged(isMerged);
+        return branchDTO;
+    }
+
     private SCMRepository buildScmRepository(Ref ref) {
         Optional<Link> optLink = ref.getRepository().getLinks().getClone().stream().filter(l -> !l.getName().toLowerCase().equals("ssh")).findFirst();
         String url = optLink.isPresent() ? optLink.get().getHref() : ref.getRepository().getLinks().getClone().get(0).getHref();
@@ -147,12 +186,14 @@ public class BitbucketServerFetchHandler extends FetchHandler {
                 start = collection.getStart() + collection.getLimit();
 
                 //remove outdated items
-                for (int i = result.size() - 1; i >= 0; i--) {
-                    if (result.get(i).getUpdatedTime() <= minUpdateTime) {
-                        result.remove(i);
-                        finished = true;
-                    } else {
-                        break;
+                if (minUpdateTime != null) {
+                    for (int i = result.size() - 1; i >= 0; i--) {
+                        if (result.get(i).getUpdatedTime() <= minUpdateTime) {
+                            result.remove(i);
+                            finished = true;
+                        } else {
+                            break;
+                        }
                     }
                 }
             } while (!finished);
@@ -214,5 +255,10 @@ public class BitbucketServerFetchHandler extends FetchHandler {
     @Override
     protected String parseRequestError(OctaneResponse response) {
         return JsonConverter.getErrorMessage(response.getBody());
+    }
+
+    @Override
+    protected String getClonePathSSH(String httpClonePath) {
+        return null;
     }
 }

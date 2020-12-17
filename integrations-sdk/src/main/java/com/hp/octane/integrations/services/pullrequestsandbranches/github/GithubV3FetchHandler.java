@@ -4,12 +4,10 @@ package com.hp.octane.integrations.services.pullrequestsandbranches.github;
 import com.hp.octane.integrations.dto.connectivity.HttpMethod;
 import com.hp.octane.integrations.dto.connectivity.OctaneRequest;
 import com.hp.octane.integrations.dto.connectivity.OctaneResponse;
+import com.hp.octane.integrations.dto.scm.Branch;
 import com.hp.octane.integrations.dto.scm.SCMRepository;
 import com.hp.octane.integrations.dto.scm.SCMType;
-import com.hp.octane.integrations.services.pullrequestsandbranches.factory.CommitUserIdPicker;
-import com.hp.octane.integrations.services.pullrequestsandbranches.factory.PullRequestFetchParameters;
-import com.hp.octane.integrations.services.pullrequestsandbranches.factory.FetchUtils;
-import com.hp.octane.integrations.services.pullrequestsandbranches.factory.FetchHandler;
+import com.hp.octane.integrations.services.pullrequestsandbranches.factory.*;
 import com.hp.octane.integrations.services.pullrequestsandbranches.github.pojo.*;
 import com.hp.octane.integrations.services.pullrequestsandbranches.rest.authentication.AuthenticationStrategy;
 
@@ -31,6 +29,11 @@ public abstract class GithubV3FetchHandler extends FetchHandler {
     @Override
     protected String parseRequestError(OctaneResponse response) {
         return JsonConverter.getErrorMessage(response.getBody());
+    }
+
+    @Override
+    public List<Branch> fetchBranches(BranchFetchParameters parameters, Consumer<String> logger) throws IOException {
+        return null;
     }
 
     @Override
@@ -88,7 +91,7 @@ public abstract class GithubV3FetchHandler extends FetchHandler {
                             .setComment(commit.getCommit().getMessage())
                             .setUser(getUserName(commit.getCommit().getCommitter().getEmail(), commit.getCommit().getCommitter().getName()))
                             .setUserEmail(commit.getCommit().getCommitter().getEmail())
-                            .setTime(convertDateToLong(commit.getCommit().getCommitter().getDate()))
+                            .setTime(FetchUtils.convertISO8601DateStringToLong(commit.getCommit().getCommitter().getDate()))
                             .setParentRevId(commit.getParents().get(0).getSha());
                     dtoCommits.add(dtoCommit);
                 }
@@ -103,13 +106,13 @@ public abstract class GithubV3FetchHandler extends FetchHandler {
                         .setTitle(pr.getTitle())
                         .setDescription(pr.getBody())
                         .setState(pr.getState())
-                        .setCreatedTime(convertDateToLong(pr.getCreatedAt()))
-                        .setUpdatedTime(convertDateToLong(pr.getUpdatedAt()))
-                        .setMergedTime(convertDateToLong(pr.getMergedAt()))
+                        .setCreatedTime(FetchUtils.convertISO8601DateStringToLong(pr.getCreatedAt()))
+                        .setUpdatedTime(FetchUtils.convertISO8601DateStringToLong(pr.getUpdatedAt()))
+                        .setMergedTime(FetchUtils.convertISO8601DateStringToLong(pr.getMergedAt()))
                         .setIsMerged(pr.getMergedAt() != null)
                         .setAuthorName(userId)
                         .setAuthorEmail(prAuthor.getEmail())
-                        .setClosedTime(convertDateToLong(pr.getClosedAt()))
+                        .setClosedTime(FetchUtils.convertISO8601DateStringToLong(pr.getClosedAt()))
                         .setSelfUrl(pr.getHtmlUrl())
                         .setSourceRepository(sourceRepository)
                         .setTargetRepository(targetRepository)
@@ -129,19 +132,6 @@ public abstract class GithubV3FetchHandler extends FetchHandler {
         return result;
     }
 
-
-    public static Long convertDateToLong(String dateStr) {
-        if (dateStr == null || dateStr.isEmpty()) {
-            return null;
-        }
-        //All timestamps return in ISO 8601 format:YYYY-MM-DDTHH:MM:SSZ
-        return Instant.parse(dateStr).getEpochSecond() * 1000;
-    }
-
-    public static String convertLongDateToISO8601(long date) {
-        //All timestamps return in ISO 8601 format:YYYY-MM-DDTHH:MM:SSZ
-        return Instant.ofEpochMilli(date).toString();
-    }
 
     private SCMRepository buildScmRepository(PullRequestRepo ref) {
         return dtoFactory.newDTO(SCMRepository.class)

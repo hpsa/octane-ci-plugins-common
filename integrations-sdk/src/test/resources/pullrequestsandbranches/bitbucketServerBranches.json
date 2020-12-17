@@ -1,0 +1,1016 @@
+{
+  "size": 10,
+  "limit": 10,
+  "isLastPage": false,
+  "values": [
+    {
+      "id": "refs/heads/master",
+      "displayId": "master",
+      "type": "BRANCH",
+      "latestCommit": "c0283b4a65984c5a428a35144170e26fbea3442b",
+      "latestChangeset": "c0283b4a65984c5a428a35144170e26fbea3442b",
+      "isDefault": true,
+      "metadata": {
+        "com.atlassian.bitbucket.server.bitbucket-jira:branch-list-jira-issues": [],
+        "com.atlassian.bitbucket.server.bitbucket-branch:latest-commit-metadata": {
+          "id": "c0283b4a65984c5a428a35144170e26fbea3442b",
+          "displayId": "c0283b4a659",
+          "author": {
+            "name": "admin",
+            "emailAddress": "dmilsteinn@gmail.com",
+            "id": 1,
+            "displayName": "admin",
+            "active": true,
+            "slug": "admin",
+            "type": "NORMAL",
+            "links": {
+              "self": [
+                {
+                  "href": "http://myd-hvm02624.swinfra.net:7990/users/admin"
+                }
+              ]
+            },
+            "avatarUrl": "http://www.gravatar.com/avatar/9fdb5baa4816bf406e44206a261045ea.jpg?s=64&d=mm"
+          },
+          "authorTimestamp": 1606330206000,
+          "committer": {
+            "name": "admin",
+            "emailAddress": "dmilsteinn@gmail.com",
+            "id": 1,
+            "displayName": "admin",
+            "active": true,
+            "slug": "admin",
+            "type": "NORMAL",
+            "links": {
+              "self": [
+                {
+                  "href": "http://myd-hvm02624.swinfra.net:7990/users/admin"
+                }
+              ]
+            },
+            "avatarUrl": "http://www.gravatar.com/avatar/9fdb5baa4816bf406e44206a261045ea.jpg?s=64&d=mm"
+          },
+          "committerTimestamp": 1606330206000,
+          "message": "Pull request #118: onlyText edited online with Bitbucket\n\nMerge in TES/simple-tests from a6 to master\n\n* commit '8fceacc755d7a372dbab616149fe1c86999ddf5f':\n  onlyText edited online with Bitbucket",
+          "parents": [
+            {
+              "id": "0e5c62ce7841620af41f7023cc9b265f92aa4a7d",
+              "displayId": "0e5c62ce784"
+            },
+            {
+              "id": "8fceacc755d7a372dbab616149fe1c86999ddf5f",
+              "displayId": "8fceacc755d"
+            }
+          ]
+        },
+        "com.atlassian.bitbucket.server.bitbucket-ref-metadata:outgoing-pull-request-metadata": {
+          "open": 9,
+          "merged": 0,
+          "declined": 0
+        }
+      }
+    },
+    {
+      "id": "refs/heads/a7",
+      "displayId": "a7",
+      "type": "BRANCH",
+      "latestCommit": "c0283b4a65984c5a428a35144170e26fbea3442b",
+      "latestChangeset": "c0283b4a65984c5a428a35144170e26fbea3442b",
+      "isDefault": false,
+      "metadata": {
+        "com.atlassian.bitbucket.server.bitbucket-jira:branch-list-jira-issues": [],
+        "com.atlassian.bitbucket.server.bitbucket-branch:ahead-behind-metadata-provider": {
+          "ahead": 0,
+          "behind": 0
+        },
+        "com.atlassian.bitbucket.server.bitbucket-branch:latest-commit-metadata": {
+          "id": "c0283b4a65984c5a428a35144170e26fbea3442b",
+          "displayId": "c0283b4a659",
+          "author": {
+            "name": "admin",
+            "emailAddress": "dmilsteinn@gmail.com",
+            "id": 1,
+            "displayName": "admin",
+            "active": true,
+            "slug": "admin",
+            "type": "NORMAL",
+            "links": {
+              "self": [
+                {
+                  "href": "http://myd-hvm02624.swinfra.net:7990/users/admin"
+                }
+              ]
+            },
+            "avatarUrl": "http://www.gravatar.com/avatar/9fdb5baa4816bf406e44206a261045ea.jpg?s=64&d=mm"
+          },
+          "authorTimestamp": 1606330206000,
+          "committer": {
+            "name": "admin",
+            "emailAddress": "dmilsteinn@gmail.com",
+            "id": 1,
+            "displayName": "admin",
+            "active": true,
+            "slug": "admin",
+            "type": "NORMAL",
+            "links": {
+              "self": [
+                {
+                  "href": "http://myd-hvm02624.swinfra.net:7990/users/admin"
+                }
+              ]
+            },
+            "avatarUrl": "http://www.gravatar.com/avatar/9fdb5baa4816bf406e44206a261045ea.jpg?s=64&d=mm"
+          },
+          "committerTimestamp": 1606330206000,
+          "message": "Pull request #118: onlyText edited online with Bitbucket\n\nMerge in TES/simple-tests from a6 to master\n\n* commit '8fceacc755d7a372dbab616149fe1c86999ddf5f':\n  onlyText edited online with Bitbucket",
+          "parents": [
+            {
+              "id": "0e5c62ce7841620af41f7023cc9b265f92aa4a7d",
+              "displayId": "0e5c62ce784"
+            },
+            {
+              "id": "8fceacc755d7a372dbab616149fe1c86999ddf5f",
+              "displayId": "8fceacc755d"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "refs/heads/a6",
+      "displayId": "a6",
+      "type": "BRANCH",
+      "latestCommit": "8fceacc755d7a372dbab616149fe1c86999ddf5f",
+      "latestChangeset": "8fceacc755d7a372dbab616149fe1c86999ddf5f",
+      "isDefault": false,
+      "metadata": {
+        "com.atlassian.bitbucket.server.bitbucket-jira:branch-list-jira-issues": [],
+        "com.atlassian.bitbucket.server.bitbucket-branch:ahead-behind-metadata-provider": {
+          "ahead": 0,
+          "behind": 1
+        },
+        "com.atlassian.bitbucket.server.bitbucket-branch:latest-commit-metadata": {
+          "id": "8fceacc755d7a372dbab616149fe1c86999ddf5f",
+          "displayId": "8fceacc755d",
+          "author": {
+            "name": "admin",
+            "emailAddress": "dmilsteinn@gmail.com",
+            "id": 1,
+            "displayName": "admin",
+            "active": true,
+            "slug": "admin",
+            "type": "NORMAL",
+            "links": {
+              "self": [
+                {
+                  "href": "http://myd-hvm02624.swinfra.net:7990/users/admin"
+                }
+              ]
+            },
+            "avatarUrl": "http://www.gravatar.com/avatar/9fdb5baa4816bf406e44206a261045ea.jpg?s=64&d=mm"
+          },
+          "authorTimestamp": 1606330180000,
+          "committer": {
+            "name": "admin",
+            "emailAddress": "dmilsteinn@gmail.com",
+            "id": 1,
+            "displayName": "admin",
+            "active": true,
+            "slug": "admin",
+            "type": "NORMAL",
+            "links": {
+              "self": [
+                {
+                  "href": "http://myd-hvm02624.swinfra.net:7990/users/admin"
+                }
+              ]
+            },
+            "avatarUrl": "http://www.gravatar.com/avatar/9fdb5baa4816bf406e44206a261045ea.jpg?s=64&d=mm"
+          },
+          "committerTimestamp": 1606330180000,
+          "message": "onlyText edited online with Bitbucket",
+          "parents": [
+            {
+              "id": "0e5c62ce7841620af41f7023cc9b265f92aa4a7d",
+              "displayId": "0e5c62ce784"
+            }
+          ]
+        },
+        "com.atlassian.bitbucket.server.bitbucket-ref-metadata:outgoing-pull-request-metadata": {
+          "pullRequest": {
+            "id": 118,
+            "version": 2,
+            "title": "onlyText edited online with Bitbucket",
+            "state": "MERGED",
+            "open": false,
+            "closed": true,
+            "createdDate": 1606330187896,
+            "updatedDate": 1606330206492,
+            "closedDate": 1606330206492,
+            "fromRef": {
+              "id": "refs/heads/a6",
+              "displayId": "a6",
+              "latestCommit": "8fceacc755d7a372dbab616149fe1c86999ddf5f",
+              "repository": {
+                "slug": "simple-tests",
+                "id": 1,
+                "name": "simple-tests",
+                "hierarchyId": "3652cee12ecd25817b22",
+                "scmId": "git",
+                "state": "AVAILABLE",
+                "statusMessage": "Available",
+                "forkable": true,
+                "project": {
+                  "key": "TES",
+                  "id": 2,
+                  "name": "tests",
+                  "public": false,
+                  "type": "NORMAL"
+                },
+                "public": true
+              }
+            },
+            "toRef": {
+              "id": "refs/heads/master",
+              "displayId": "master",
+              "latestCommit": "0e5c62ce7841620af41f7023cc9b265f92aa4a7d",
+              "repository": {
+                "slug": "simple-tests",
+                "id": 1,
+                "name": "simple-tests",
+                "hierarchyId": "3652cee12ecd25817b22",
+                "scmId": "git",
+                "state": "AVAILABLE",
+                "statusMessage": "Available",
+                "forkable": true,
+                "project": {
+                  "key": "TES",
+                  "id": 2,
+                  "name": "tests",
+                  "public": false,
+                  "type": "NORMAL"
+                },
+                "public": true
+              }
+            },
+            "locked": false,
+            "author": {
+              "user": {
+                "name": "admin",
+                "emailAddress": "dmilsteinn@gmail.com",
+                "id": 1,
+                "displayName": "admin",
+                "active": true,
+                "slug": "admin",
+                "type": "NORMAL"
+              },
+              "role": "AUTHOR",
+              "approved": false,
+              "status": "UNAPPROVED"
+            },
+            "reviewers": [],
+            "participants": []
+          }
+        }
+      }
+    },
+    {
+      "id": "refs/heads/a3_2",
+      "displayId": "a3_2",
+      "type": "BRANCH",
+      "latestCommit": "4d16ceac51aa8e8cbd04c4db0e9da0439d73e75c",
+      "latestChangeset": "4d16ceac51aa8e8cbd04c4db0e9da0439d73e75c",
+      "isDefault": false,
+      "metadata": {
+        "com.atlassian.bitbucket.server.bitbucket-jira:branch-list-jira-issues": [],
+        "com.atlassian.bitbucket.server.bitbucket-branch:ahead-behind-metadata-provider": {
+          "ahead": 1,
+          "behind": 37
+        },
+        "com.atlassian.bitbucket.server.bitbucket-branch:latest-commit-metadata": {
+          "id": "4d16ceac51aa8e8cbd04c4db0e9da0439d73e75c",
+          "displayId": "4d16ceac51a",
+          "author": {
+            "name": "admin",
+            "emailAddress": "dmilsteinn@gmail.com",
+            "id": 1,
+            "displayName": "admin",
+            "active": true,
+            "slug": "admin",
+            "type": "NORMAL",
+            "links": {
+              "self": [
+                {
+                  "href": "http://myd-hvm02624.swinfra.net:7990/users/admin"
+                }
+              ]
+            },
+            "avatarUrl": "http://www.gravatar.com/avatar/9fdb5baa4816bf406e44206a261045ea.jpg?s=64&d=mm"
+          },
+          "authorTimestamp": 1606330102000,
+          "committer": {
+            "name": "admin",
+            "emailAddress": "dmilsteinn@gmail.com",
+            "id": 1,
+            "displayName": "admin",
+            "active": true,
+            "slug": "admin",
+            "type": "NORMAL",
+            "links": {
+              "self": [
+                {
+                  "href": "http://myd-hvm02624.swinfra.net:7990/users/admin"
+                }
+              ]
+            },
+            "avatarUrl": "http://www.gravatar.com/avatar/9fdb5baa4816bf406e44206a261045ea.jpg?s=64&d=mm"
+          },
+          "committerTimestamp": 1606330102000,
+          "message": "onlyText edited online with Bitbucket",
+          "parents": [
+            {
+              "id": "564b40eb8b1202154be827634f712d6a748baf18",
+              "displayId": "564b40eb8b1"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "refs/heads/a3",
+      "displayId": "a3",
+      "type": "BRANCH",
+      "latestCommit": "4d16ceac51aa8e8cbd04c4db0e9da0439d73e75c",
+      "latestChangeset": "4d16ceac51aa8e8cbd04c4db0e9da0439d73e75c",
+      "isDefault": false,
+      "metadata": {
+        "com.atlassian.bitbucket.server.bitbucket-jira:branch-list-jira-issues": [],
+        "com.atlassian.bitbucket.server.bitbucket-branch:ahead-behind-metadata-provider": {
+          "ahead": 1,
+          "behind": 37
+        },
+        "com.atlassian.bitbucket.server.bitbucket-branch:latest-commit-metadata": {
+          "id": "4d16ceac51aa8e8cbd04c4db0e9da0439d73e75c",
+          "displayId": "4d16ceac51a",
+          "author": {
+            "name": "admin",
+            "emailAddress": "dmilsteinn@gmail.com",
+            "id": 1,
+            "displayName": "admin",
+            "active": true,
+            "slug": "admin",
+            "type": "NORMAL",
+            "links": {
+              "self": [
+                {
+                  "href": "http://myd-hvm02624.swinfra.net:7990/users/admin"
+                }
+              ]
+            },
+            "avatarUrl": "http://www.gravatar.com/avatar/9fdb5baa4816bf406e44206a261045ea.jpg?s=64&d=mm"
+          },
+          "authorTimestamp": 1606330102000,
+          "committer": {
+            "name": "admin",
+            "emailAddress": "dmilsteinn@gmail.com",
+            "id": 1,
+            "displayName": "admin",
+            "active": true,
+            "slug": "admin",
+            "type": "NORMAL",
+            "links": {
+              "self": [
+                {
+                  "href": "http://myd-hvm02624.swinfra.net:7990/users/admin"
+                }
+              ]
+            },
+            "avatarUrl": "http://www.gravatar.com/avatar/9fdb5baa4816bf406e44206a261045ea.jpg?s=64&d=mm"
+          },
+          "committerTimestamp": 1606330102000,
+          "message": "onlyText edited online with Bitbucket",
+          "parents": [
+            {
+              "id": "564b40eb8b1202154be827634f712d6a748baf18",
+              "displayId": "564b40eb8b1"
+            }
+          ]
+        },
+        "com.atlassian.bitbucket.server.bitbucket-ref-metadata:outgoing-pull-request-metadata": {
+          "pullRequest": {
+            "id": 117,
+            "version": 1,
+            "title": "onlyText edited online with Bitbucket",
+            "state": "OPEN",
+            "open": true,
+            "closed": false,
+            "createdDate": 1606330116486,
+            "updatedDate": 1606330116486,
+            "fromRef": {
+              "id": "refs/heads/a3",
+              "displayId": "a3",
+              "latestCommit": "4d16ceac51aa8e8cbd04c4db0e9da0439d73e75c",
+              "repository": {
+                "slug": "simple-tests",
+                "id": 1,
+                "name": "simple-tests",
+                "hierarchyId": "3652cee12ecd25817b22",
+                "scmId": "git",
+                "state": "AVAILABLE",
+                "statusMessage": "Available",
+                "forkable": true,
+                "project": {
+                  "key": "TES",
+                  "id": 2,
+                  "name": "tests",
+                  "public": false,
+                  "type": "NORMAL"
+                },
+                "public": true
+              }
+            },
+            "toRef": {
+              "id": "refs/heads/master",
+              "displayId": "master",
+              "latestCommit": "c0283b4a65984c5a428a35144170e26fbea3442b",
+              "repository": {
+                "slug": "simple-tests",
+                "id": 1,
+                "name": "simple-tests",
+                "hierarchyId": "3652cee12ecd25817b22",
+                "scmId": "git",
+                "state": "AVAILABLE",
+                "statusMessage": "Available",
+                "forkable": true,
+                "project": {
+                  "key": "TES",
+                  "id": 2,
+                  "name": "tests",
+                  "public": false,
+                  "type": "NORMAL"
+                },
+                "public": true
+              }
+            },
+            "locked": false,
+            "author": {
+              "user": {
+                "name": "admin",
+                "emailAddress": "dmilsteinn@gmail.com",
+                "id": 1,
+                "displayName": "admin",
+                "active": true,
+                "slug": "admin",
+                "type": "NORMAL"
+              },
+              "role": "AUTHOR",
+              "approved": false,
+              "status": "UNAPPROVED"
+            },
+            "reviewers": [],
+            "participants": []
+          }
+        }
+      }
+    },
+    {
+      "id": "refs/heads/a2",
+      "displayId": "a2",
+      "type": "BRANCH",
+      "latestCommit": "d6ad2dc5e77fd10ca8ad8a23bb162a71b88784fe",
+      "latestChangeset": "d6ad2dc5e77fd10ca8ad8a23bb162a71b88784fe",
+      "isDefault": false,
+      "metadata": {
+        "com.atlassian.bitbucket.server.bitbucket-jira:branch-list-jira-issues": [],
+        "com.atlassian.bitbucket.server.bitbucket-branch:ahead-behind-metadata-provider": {
+          "ahead": 8,
+          "behind": 37
+        },
+        "com.atlassian.bitbucket.server.bitbucket-branch:latest-commit-metadata": {
+          "id": "d6ad2dc5e77fd10ca8ad8a23bb162a71b88784fe",
+          "displayId": "d6ad2dc5e77",
+          "author": {
+            "name": "admin",
+            "emailAddress": "dmilsteinn@gmail.com",
+            "id": 1,
+            "displayName": "admin",
+            "active": true,
+            "slug": "admin",
+            "type": "NORMAL",
+            "links": {
+              "self": [
+                {
+                  "href": "http://myd-hvm02624.swinfra.net:7990/users/admin"
+                }
+              ]
+            },
+            "avatarUrl": "http://www.gravatar.com/avatar/9fdb5baa4816bf406e44206a261045ea.jpg?s=64&d=mm"
+          },
+          "authorTimestamp": 1600976555000,
+          "committer": {
+            "name": "admin",
+            "emailAddress": "dmilsteinn@gmail.com",
+            "id": 1,
+            "displayName": "admin",
+            "active": true,
+            "slug": "admin",
+            "type": "NORMAL",
+            "links": {
+              "self": [
+                {
+                  "href": "http://myd-hvm02624.swinfra.net:7990/users/admin"
+                }
+              ]
+            },
+            "avatarUrl": "http://www.gravatar.com/avatar/9fdb5baa4816bf406e44206a261045ea.jpg?s=64&d=mm"
+          },
+          "committerTimestamp": 1600976555000,
+          "message": "a2 Bitbucket",
+          "parents": [
+            {
+              "id": "24230f3dde28da892d0fd387d1a0b09f631f6245",
+              "displayId": "24230f3dde2"
+            }
+          ]
+        },
+        "com.atlassian.bitbucket.server.bitbucket-ref-metadata:outgoing-pull-request-metadata": {
+          "pullRequest": {
+            "id": 115,
+            "version": 1,
+            "title": "defect #1005",
+            "description": "* Bitcuket a2\r\n* Bitcuket a2\r\n* Bitbucket a2\r\n* a2 Bitbucket\r\n* a2 Bitbucket\r\n* a2  bitbucket\r\n* a2 Bitbucket\r\n* a2 Bitbucket\r\n12.2111",
+            "state": "OPEN",
+            "open": true,
+            "closed": false,
+            "createdDate": 1603874025233,
+            "updatedDate": 1603874025233,
+            "fromRef": {
+              "id": "refs/heads/a2",
+              "displayId": "a2",
+              "latestCommit": "d6ad2dc5e77fd10ca8ad8a23bb162a71b88784fe",
+              "repository": {
+                "slug": "simple-tests",
+                "id": 1,
+                "name": "simple-tests",
+                "hierarchyId": "3652cee12ecd25817b22",
+                "scmId": "git",
+                "state": "AVAILABLE",
+                "statusMessage": "Available",
+                "forkable": true,
+                "project": {
+                  "key": "TES",
+                  "id": 2,
+                  "name": "tests",
+                  "public": false,
+                  "type": "NORMAL"
+                },
+                "public": true
+              }
+            },
+            "toRef": {
+              "id": "refs/heads/master",
+              "displayId": "master",
+              "latestCommit": "c0283b4a65984c5a428a35144170e26fbea3442b",
+              "repository": {
+                "slug": "simple-tests",
+                "id": 1,
+                "name": "simple-tests",
+                "hierarchyId": "3652cee12ecd25817b22",
+                "scmId": "git",
+                "state": "AVAILABLE",
+                "statusMessage": "Available",
+                "forkable": true,
+                "project": {
+                  "key": "TES",
+                  "id": 2,
+                  "name": "tests",
+                  "public": false,
+                  "type": "NORMAL"
+                },
+                "public": true
+              }
+            },
+            "locked": false,
+            "author": {
+              "user": {
+                "name": "admin",
+                "emailAddress": "dmilsteinn@gmail.com",
+                "id": 1,
+                "displayName": "admin",
+                "active": true,
+                "slug": "admin",
+                "type": "NORMAL"
+              },
+              "role": "AUTHOR",
+              "approved": false,
+              "status": "UNAPPROVED"
+            },
+            "reviewers": [],
+            "participants": []
+          }
+        }
+      }
+    },
+    {
+      "id": "refs/heads/a1",
+      "displayId": "a1",
+      "type": "BRANCH",
+      "latestCommit": "df05518863c8c2d8d51ebd7ab03349e5601d33f2",
+      "latestChangeset": "df05518863c8c2d8d51ebd7ab03349e5601d33f2",
+      "isDefault": false,
+      "metadata": {
+        "com.atlassian.bitbucket.server.bitbucket-jira:branch-list-jira-issues": [],
+        "com.atlassian.bitbucket.server.bitbucket-branch:ahead-behind-metadata-provider": {
+          "ahead": 11,
+          "behind": 37
+        },
+        "com.atlassian.bitbucket.server.bitbucket-branch:latest-commit-metadata": {
+          "id": "df05518863c8c2d8d51ebd7ab03349e5601d33f2",
+          "displayId": "df05518863c",
+          "author": {
+            "name": "admin",
+            "emailAddress": "dmilsteinn@gmail.com",
+            "id": 1,
+            "displayName": "admin",
+            "active": true,
+            "slug": "admin",
+            "type": "NORMAL",
+            "links": {
+              "self": [
+                {
+                  "href": "http://myd-hvm02624.swinfra.net:7990/users/admin"
+                }
+              ]
+            },
+            "avatarUrl": "http://www.gravatar.com/avatar/9fdb5baa4816bf406e44206a261045ea.jpg?s=64&d=mm"
+          },
+          "authorTimestamp": 1600975433000,
+          "committer": {
+            "name": "admin",
+            "emailAddress": "dmilsteinn@gmail.com",
+            "id": 1,
+            "displayName": "admin",
+            "active": true,
+            "slug": "admin",
+            "type": "NORMAL",
+            "links": {
+              "self": [
+                {
+                  "href": "http://myd-hvm02624.swinfra.net:7990/users/admin"
+                }
+              ]
+            },
+            "avatarUrl": "http://www.gravatar.com/avatar/9fdb5baa4816bf406e44206a261045ea.jpg?s=64&d=mm"
+          },
+          "committerTimestamp": 1600975433000,
+          "message": "a1 Bitbucket",
+          "parents": [
+            {
+              "id": "e2ae29ef7fda88241e1b2f07e463bb65f167569d",
+              "displayId": "e2ae29ef7fd"
+            }
+          ]
+        },
+        "com.atlassian.bitbucket.server.bitbucket-ref-metadata:outgoing-pull-request-metadata": {
+          "pullRequest": {
+            "id": 116,
+            "version": 1,
+            "title": "A1",
+            "state": "OPEN",
+            "open": true,
+            "closed": false,
+            "createdDate": 1606329174978,
+            "updatedDate": 1606329174978,
+            "fromRef": {
+              "id": "refs/heads/a1",
+              "displayId": "a1",
+              "latestCommit": "df05518863c8c2d8d51ebd7ab03349e5601d33f2",
+              "repository": {
+                "slug": "simple-tests",
+                "id": 1,
+                "name": "simple-tests",
+                "hierarchyId": "3652cee12ecd25817b22",
+                "scmId": "git",
+                "state": "AVAILABLE",
+                "statusMessage": "Available",
+                "forkable": true,
+                "project": {
+                  "key": "TES",
+                  "id": 2,
+                  "name": "tests",
+                  "public": false,
+                  "type": "NORMAL"
+                },
+                "public": true
+              }
+            },
+            "toRef": {
+              "id": "refs/heads/master",
+              "displayId": "master",
+              "latestCommit": "c0283b4a65984c5a428a35144170e26fbea3442b",
+              "repository": {
+                "slug": "simple-tests",
+                "id": 1,
+                "name": "simple-tests",
+                "hierarchyId": "3652cee12ecd25817b22",
+                "scmId": "git",
+                "state": "AVAILABLE",
+                "statusMessage": "Available",
+                "forkable": true,
+                "project": {
+                  "key": "TES",
+                  "id": 2,
+                  "name": "tests",
+                  "public": false,
+                  "type": "NORMAL"
+                },
+                "public": true
+              }
+            },
+            "locked": false,
+            "author": {
+              "user": {
+                "name": "admin",
+                "emailAddress": "dmilsteinn@gmail.com",
+                "id": 1,
+                "displayName": "admin",
+                "active": true,
+                "slug": "admin",
+                "type": "NORMAL"
+              },
+              "role": "AUTHOR",
+              "approved": false,
+              "status": "UNAPPROVED"
+            },
+            "reviewers": [],
+            "participants": []
+          }
+        }
+      }
+    },
+    {
+      "id": "refs/heads/admin/onlyText-1600975407617",
+      "displayId": "admin/onlyText-1600975407617",
+      "type": "BRANCH",
+      "latestCommit": "a21016447cf09eda2520b81b3ecd1d61d38ef933",
+      "latestChangeset": "a21016447cf09eda2520b81b3ecd1d61d38ef933",
+      "isDefault": false,
+      "metadata": {
+        "com.atlassian.bitbucket.server.bitbucket-jira:branch-list-jira-issues": [],
+        "com.atlassian.bitbucket.server.bitbucket-branch:ahead-behind-metadata-provider": {
+          "ahead": 1,
+          "behind": 8
+        },
+        "com.atlassian.bitbucket.server.bitbucket-branch:latest-commit-metadata": {
+          "id": "a21016447cf09eda2520b81b3ecd1d61d38ef933",
+          "displayId": "a21016447cf",
+          "author": {
+            "name": "admin",
+            "emailAddress": "dmilsteinn@gmail.com",
+            "id": 1,
+            "displayName": "admin",
+            "active": true,
+            "slug": "admin",
+            "type": "NORMAL",
+            "links": {
+              "self": [
+                {
+                  "href": "http://myd-hvm02624.swinfra.net:7990/users/admin"
+                }
+              ]
+            },
+            "avatarUrl": "http://www.gravatar.com/avatar/9fdb5baa4816bf406e44206a261045ea.jpg?s=64&d=mm"
+          },
+          "authorTimestamp": 1600975418000,
+          "committer": {
+            "name": "admin",
+            "emailAddress": "dmilsteinn@gmail.com",
+            "id": 1,
+            "displayName": "admin",
+            "active": true,
+            "slug": "admin",
+            "type": "NORMAL",
+            "links": {
+              "self": [
+                {
+                  "href": "http://myd-hvm02624.swinfra.net:7990/users/admin"
+                }
+              ]
+            },
+            "avatarUrl": "http://www.gravatar.com/avatar/9fdb5baa4816bf406e44206a261045ea.jpg?s=64&d=mm"
+          },
+          "committerTimestamp": 1600975418000,
+          "message": "master Bitbucket",
+          "parents": [
+            {
+              "id": "770d88e0462f7789e5ec5e1759d64d5a96e36619",
+              "displayId": "770d88e0462"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "refs/heads/admin/onlyText-1600702490688",
+      "displayId": "admin/onlyText-1600702490688",
+      "type": "BRANCH",
+      "latestCommit": "1ff8b226f1c56ad5a10cd06b31378830dbcf29c4",
+      "latestChangeset": "1ff8b226f1c56ad5a10cd06b31378830dbcf29c4",
+      "isDefault": false,
+      "metadata": {
+        "com.atlassian.bitbucket.server.bitbucket-jira:branch-list-jira-issues": [],
+        "com.atlassian.bitbucket.server.bitbucket-branch:ahead-behind-metadata-provider": {
+          "ahead": 1,
+          "behind": 37
+        },
+        "com.atlassian.bitbucket.server.bitbucket-branch:latest-commit-metadata": {
+          "id": "1ff8b226f1c56ad5a10cd06b31378830dbcf29c4",
+          "displayId": "1ff8b226f1c",
+          "author": {
+            "name": "admin",
+            "emailAddress": "dmilsteinn@gmail.com",
+            "id": 1,
+            "displayName": "admin",
+            "active": true,
+            "slug": "admin",
+            "type": "NORMAL",
+            "links": {
+              "self": [
+                {
+                  "href": "http://myd-hvm02624.swinfra.net:7990/users/admin"
+                }
+              ]
+            },
+            "avatarUrl": "http://www.gravatar.com/avatar/9fdb5baa4816bf406e44206a261045ea.jpg?s=64&d=mm"
+          },
+          "authorTimestamp": 1600702504000,
+          "committer": {
+            "name": "admin",
+            "emailAddress": "dmilsteinn@gmail.com",
+            "id": 1,
+            "displayName": "admin",
+            "active": true,
+            "slug": "admin",
+            "type": "NORMAL",
+            "links": {
+              "self": [
+                {
+                  "href": "http://myd-hvm02624.swinfra.net:7990/users/admin"
+                }
+              ]
+            },
+            "avatarUrl": "http://www.gravatar.com/avatar/9fdb5baa4816bf406e44206a261045ea.jpg?s=64&d=mm"
+          },
+          "committerTimestamp": 1600702504000,
+          "message": "Bitcuket a1",
+          "parents": [
+            {
+              "id": "564b40eb8b1202154be827634f712d6a748baf18",
+              "displayId": "564b40eb8b1"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "refs/heads/radi1",
+      "displayId": "radi1",
+      "type": "BRANCH",
+      "latestCommit": "abad6987fb15262277f14949cff28894c6b8ebbc",
+      "latestChangeset": "abad6987fb15262277f14949cff28894c6b8ebbc",
+      "isDefault": false,
+      "metadata": {
+        "com.atlassian.bitbucket.server.bitbucket-jira:branch-list-jira-issues": [],
+        "com.atlassian.bitbucket.server.bitbucket-branch:ahead-behind-metadata-provider": {
+          "ahead": 1,
+          "behind": 29
+        },
+        "com.atlassian.bitbucket.server.bitbucket-branch:latest-commit-metadata": {
+          "id": "abad6987fb15262277f14949cff28894c6b8ebbc",
+          "displayId": "abad6987fb1",
+          "author": {
+            "name": "radislav77",
+            "emailAddress": "radislav77@gmail.com",
+            "id": 52,
+            "displayName": "radislav berkovich",
+            "active": true,
+            "slug": "radislav77",
+            "type": "NORMAL",
+            "links": {
+              "self": [
+                {
+                  "href": "http://myd-hvm02624.swinfra.net:7990/users/radislav77"
+                }
+              ]
+            },
+            "avatarUrl": "http://www.gravatar.com/avatar/28620cba54d9d412a6d5861e9eba65b4.jpg?s=64&d=mm"
+          },
+          "authorTimestamp": 1595906893000,
+          "committer": {
+            "name": "radislav77",
+            "emailAddress": "radislav77@gmail.com",
+            "id": 52,
+            "displayName": "radislav berkovich",
+            "active": true,
+            "slug": "radislav77",
+            "type": "NORMAL",
+            "links": {
+              "self": [
+                {
+                  "href": "http://myd-hvm02624.swinfra.net:7990/users/radislav77"
+                }
+              ]
+            },
+            "avatarUrl": "http://www.gravatar.com/avatar/28620cba54d9d412a6d5861e9eba65b4.jpg?s=64&d=mm"
+          },
+          "committerTimestamp": 1595906893000,
+          "message": "6:28",
+          "parents": [
+            {
+              "id": "49924cf3fd6290e6d50e5bbea031daaa71bce0c1",
+              "displayId": "49924cf3fd6"
+            }
+          ]
+        },
+        "com.atlassian.bitbucket.server.bitbucket-ref-metadata:outgoing-pull-request-metadata": {
+          "pullRequest": {
+            "id": 114,
+            "version": 28,
+            "title": "6:28",
+            "description": "radi1",
+            "state": "OPEN",
+            "open": true,
+            "closed": false,
+            "createdDate": 1595906920885,
+            "updatedDate": 1595906920885,
+            "fromRef": {
+              "id": "refs/heads/radi1",
+              "displayId": "radi1",
+              "latestCommit": "abad6987fb15262277f14949cff28894c6b8ebbc",
+              "repository": {
+                "slug": "simple-tests",
+                "id": 1,
+                "name": "simple-tests",
+                "hierarchyId": "3652cee12ecd25817b22",
+                "scmId": "git",
+                "state": "AVAILABLE",
+                "statusMessage": "Available",
+                "forkable": true,
+                "project": {
+                  "key": "TES",
+                  "id": 2,
+                  "name": "tests",
+                  "public": false,
+                  "type": "NORMAL"
+                },
+                "public": true
+              }
+            },
+            "toRef": {
+              "id": "refs/heads/master",
+              "displayId": "master",
+              "latestCommit": "c0283b4a65984c5a428a35144170e26fbea3442b",
+              "repository": {
+                "slug": "simple-tests",
+                "id": 1,
+                "name": "simple-tests",
+                "hierarchyId": "3652cee12ecd25817b22",
+                "scmId": "git",
+                "state": "AVAILABLE",
+                "statusMessage": "Available",
+                "forkable": true,
+                "project": {
+                  "key": "TES",
+                  "id": 2,
+                  "name": "tests",
+                  "public": false,
+                  "type": "NORMAL"
+                },
+                "public": true
+              }
+            },
+            "locked": false,
+            "author": {
+              "user": {
+                "name": "radislav77",
+                "emailAddress": "radislav77@gmail.com",
+                "id": 52,
+                "displayName": "radislav berkovich",
+                "active": true,
+                "slug": "radislav77",
+                "type": "NORMAL"
+              },
+              "role": "AUTHOR",
+              "approved": false,
+              "status": "UNAPPROVED"
+            },
+            "reviewers": [],
+            "participants": []
+          }
+        }
+      }
+    }
+  ],
+  "start": 0,
+  "nextPageStart": 10
+}
