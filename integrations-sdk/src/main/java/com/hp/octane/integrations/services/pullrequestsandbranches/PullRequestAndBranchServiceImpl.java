@@ -186,7 +186,7 @@ final class PullRequestAndBranchServiceImpl implements PullRequestAndBranchServi
         //DELETED
         octaneBranchMap.entrySet().stream().filter(entry -> !ciServerBranchMap.containsKey(entry.getKey()))
                 .map(e -> e.getValue()).flatMap(Collection::stream)
-                .map(e -> dtoFactory.newDTO(Branch.class).setOctaneId(e.getId()).setName(e.getName()))
+                .map(e -> dtoFactory.newDTO(Branch.class).setOctaneId(e.getId()).setName((String) e.getField(EntityConstants.ScmRepository.BRANCH_FIELD)))
                 .forEach(b -> result.getDeleted().add(b));
 
         //NEW AND UPDATES
@@ -204,14 +204,12 @@ final class PullRequestAndBranchServiceImpl implements PullRequestAndBranchServi
                 long diff = System.currentTimeMillis() - ciBranch.getLastCommitTime();
                 long diffDays = TimeUnit.MILLISECONDS.toDays(diff);
                 if (diffDays < fp.getActiveBranchDays()) {
-                    //toCreate.add(buildOctaneBranchForCreate(finalRootId, ciBranch, repoShortName, idPicker));
                     result.getCreated().add(ciBranch);
                 }
             } else {//check for update
                 octaneBranchList.forEach(octaneBranch -> {
                     if (!ciBranch.getLastCommitSHA().equals(octaneBranch.getField(EntityConstants.ScmRepository.LAST_COMMIT_SHA_FIELD)) ||
                             !ciBranch.getIsMerged().equals(octaneBranch.getField(EntityConstants.ScmRepository.IS_MERGED_FIELD))) {
-                        //toUpdate.add(buildOctaneBranchForUpdate(octaneBranch, ciBranch, idPicker));
                         ciBranch.setOctaneId(octaneBranch.getId());
                         result.getUpdated().add(ciBranch);
                     }
