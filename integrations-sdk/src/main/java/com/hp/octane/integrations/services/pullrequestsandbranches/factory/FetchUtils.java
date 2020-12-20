@@ -20,6 +20,7 @@ import com.hp.octane.integrations.utils.SdkStringUtils;
 import java.time.Instant;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class FetchUtils {
@@ -79,6 +80,20 @@ public class FetchUtils {
      */
     public static String convertLongToISO8601DateString(long date) {
         return Instant.ofEpochMilli(date).toString();
+    }
+
+    /***
+     * https://github.houston.softwaregrp.net/Octane/syncx.git=>Octane/syncx.git
+     */
+    public static String getRepoShortName(String url){
+        String patternStr = "^.*[/:](.*/.*)$";
+        Pattern pattern = Pattern.compile(patternStr);
+        Matcher matcher = pattern.matcher(url);
+        if (matcher.find() && matcher.groupCount() == 1) {
+            return matcher.group(1);
+        } else {
+            return url;
+        }
     }
 
 }

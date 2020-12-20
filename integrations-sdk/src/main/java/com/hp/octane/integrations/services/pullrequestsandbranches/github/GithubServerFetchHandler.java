@@ -27,7 +27,7 @@ public class GithubServerFetchHandler extends GithubV3FetchHandler {
     public String getRepoApiPath(String repoHttpCloneUrl) {
         validateHttpCloneUrl(repoHttpCloneUrl);
 
-        if(repoHttpCloneUrl.toLowerCase().startsWith(CLOUD_SERVICE_PREFIX)){
+        if (repoHttpCloneUrl.toLowerCase().startsWith(CLOUD_SERVICE_PREFIX)) {
             throw new IllegalArgumentException("Supplied repository URL : " + repoHttpCloneUrl + " is Git Cloud URL. Change 'SCM Tool type' to Github Cloud.");
         }
         //   https://github.houston.softwaregrp.net:443/MQM/mqm.git;
@@ -40,15 +40,12 @@ public class GithubServerFetchHandler extends GithubV3FetchHandler {
     }
 
     @Override
-    protected String getClonePathSSH(String httpClonePath) {
-        //git@github.houston.softwaregrp.net:MQM/mqm.git
-        //https://github.houston.softwaregrp.net/MQM/mqm.git
-
-        int repoSlashIndex = httpClonePath.lastIndexOf("/");
-        int teamSlashIndex = httpClonePath.substring(0, repoSlashIndex).lastIndexOf("/");
-        int hostSlashIndex = httpClonePath.substring(0, teamSlashIndex).lastIndexOf("/");
-        String host = httpClonePath.substring(hostSlashIndex+1,teamSlashIndex);
-        String teamAndRepo = httpClonePath.substring(teamSlashIndex);
-        return "git@" + host + ":" + teamAndRepo;
+    protected String getApiPath(String repoHttpCloneUrl) {
+        //   https://github.houston.softwaregrp.net:443/MQM/mqm.git;
+        // =>https://github.houston.softwaregrp.net/api/v3
+        int repoSlashIndex = repoHttpCloneUrl.lastIndexOf("/");
+        int teamSlashIndex = repoHttpCloneUrl.substring(0, repoSlashIndex).lastIndexOf("/");
+        String result = repoHttpCloneUrl.substring(0, teamSlashIndex) + "/api/v3";
+        return result;
     }
 }

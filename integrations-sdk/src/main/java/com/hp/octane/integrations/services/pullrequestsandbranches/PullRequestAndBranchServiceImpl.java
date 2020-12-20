@@ -28,12 +28,10 @@ import com.hp.octane.integrations.dto.entities.Entity;
 import com.hp.octane.integrations.dto.entities.EntityConstants;
 import com.hp.octane.integrations.dto.scm.Branch;
 import com.hp.octane.integrations.dto.scm.PullRequest;
+import com.hp.octane.integrations.dto.scm.SCMType;
 import com.hp.octane.integrations.services.entities.EntitiesService;
 import com.hp.octane.integrations.services.entities.QueryHelper;
-import com.hp.octane.integrations.services.pullrequestsandbranches.factory.BranchFetchParameters;
-import com.hp.octane.integrations.services.pullrequestsandbranches.factory.CommitUserIdPicker;
-import com.hp.octane.integrations.services.pullrequestsandbranches.factory.FetchUtils;
-import com.hp.octane.integrations.services.pullrequestsandbranches.factory.PullRequestFetchParameters;
+import com.hp.octane.integrations.services.pullrequestsandbranches.factory.*;
 import com.hp.octane.integrations.services.rest.RestService;
 import org.apache.commons.collections4.ListUtils;
 import org.apache.http.HttpStatus;
@@ -156,57 +154,101 @@ final class PullRequestAndBranchServiceImpl implements PullRequestAndBranchServi
     }
 
     @Override
-    public void syncBranchesToOctane(List<Branch> ciServerBranches, BranchFetchParameters fp, Long workspaceId, CommitUserIdPicker idPicker, Consumer<String> logConsumer) {
+    public BranchSyncResult syncBranchesToOctane(FetchHandler fetcherHandler, BranchFetchParameters fp, Long workspaceId, CommitUserIdPicker idPicker, Consumer<String> logConsumer) throws IOException {
+        //FETCH FROM CI SERVER
+        List<Branch> ciServerBranches = fetcherHandler.fetchBranches(fp, logConsumer);
+
         Map<String, Branch> ciServerBranchMap = ciServerBranches.stream().collect(Collectors.toMap(Branch::getName, Function.identity()));
 
-
         //GET BRANCHES FROM OCTANE
+        String repoShortName = FetchUtils.getRepoShortName(fp.getRepoUrl());
         List<Entity> roots = getRepositoryRoots(fp, workspaceId);
         List<Entity> octaneBranches = null;
-        String rootId = null;
+        String rootId;
         if (roots != null && !roots.isEmpty()) {
             rootId = roots.get(0).getId();
             octaneBranches = getRepositoryBranches(rootId, workspaceId);
+            logConsumer.accept("Found repository root with id " + rootId);
         } else {
-            //TODO create root
+            Entity createdRoot = createCSMRepositoryRoot(fp, repoShortName, workspaceId);
+            rootId = createdRoot.getId();
+            logConsumer.accept("Repository root is created with id " + rootId);
         }
         if (octaneBranches == null) {
             octaneBranches = Collections.emptyList();
         }
         Map<String, List<Entity>> octaneBranchMap = octaneBranches.stream().collect(groupingBy(b -> getOctaneBranchName(b)));
 
-
         //GENERATE UPDATES
-        List<Entity> toUpdate = new ArrayList<>();
-        List<Entity> toCreate = new ArrayList<>();
-
-        List<Entity> deleted = octaneBranchMap.entrySet().stream().filter(entry -> !ciServerBranchMap.containsKey(entry.getKey()))
-                .map(e -> e.getValue()).flatMap(Collection::stream).map(e -> buildOctaneBranchForUpdateAsDeleted(e))
-                .collect(Collectors.toList());
-        toUpdate.addAll(deleted);
-
         String finalRootId = rootId;
+        BranchSyncResult result = new BranchSyncResult();
+
+        //DELETED
+        octaneBranchMap.entrySet().stream().filter(entry -> !ciServerBranchMap.containsKey(entry.getKey()))
+                .map(e -> e.getValue()).flatMap(Collection::stream)
+                .map(e -> dtoFactory.newDTO(Branch.class).setOctaneId(e.getId()).setName(e.getName()))
+                .forEach(b -> result.getDeleted().add(b));
+
+        //NEW AND UPDATES
         ciServerBranches.forEach(ciBranch -> {
+            //SKIP if branch is partial (it can happen because of rate limitations)
+            if (ciBranch.isPartial()) {
+                if (!result.getHasSkipped()) {
+                    result.setHasSkipped(true);
+                    result.setFirstSkipped(ciBranch.getName());
+                }
+                return;
+            }
             List<Entity> octaneBranchList = octaneBranchMap.get(ciBranch.getName());
             if (octaneBranchList == null) {//not exist in octane, check if to add
                 long diff = System.currentTimeMillis() - ciBranch.getLastCommitTime();
                 long diffDays = TimeUnit.MILLISECONDS.toDays(diff);
                 if (diffDays < fp.getActiveBranchDays()) {
-                    toCreate.add(buildOctaneBranchForCreate(finalRootId, ciBranch, idPicker));
+                    //toCreate.add(buildOctaneBranchForCreate(finalRootId, ciBranch, repoShortName, idPicker));
+                    result.getCreated().add(ciBranch);
                 }
             } else {//check for update
                 octaneBranchList.forEach(octaneBranch -> {
                     if (!ciBranch.getLastCommitSHA().equals(octaneBranch.getField(EntityConstants.ScmRepository.LAST_COMMIT_SHA_FIELD)) ||
                             !ciBranch.getIsMerged().equals(octaneBranch.getField(EntityConstants.ScmRepository.IS_MERGED_FIELD))) {
-                        toUpdate.add(buildOctaneBranchForUpdate(octaneBranch, ciBranch, idPicker));
+                        //toUpdate.add(buildOctaneBranchForUpdate(octaneBranch, ciBranch, idPicker));
+                        ciBranch.setOctaneId(octaneBranch.getId());
+                        result.getUpdated().add(ciBranch);
                     }
                 });
             }
         });
 
         //SEND TO OCTANE
-        entitiesService.updateEntities(workspaceId, EntityConstants.ScmRepository.COLLECTION_NAME, toUpdate);
-        entitiesService.postEntities(workspaceId, EntityConstants.ScmRepository.COLLECTION_NAME, toCreate);
+        if (!result.getDeleted().isEmpty()) {
+            List<Entity> toDelete = result.getDeleted().stream().map(b -> buildOctaneBranchForUpdateAsDeleted(b)).collect(Collectors.toList());
+            entitiesService.updateEntities(workspaceId, EntityConstants.ScmRepository.COLLECTION_NAME, toDelete);
+            logConsumer.accept("Deleted branches : " + toDelete.size());
+        }
+        if (!result.getUpdated().isEmpty()) {
+            List<Entity> toUpdate = result.getUpdated().stream().map(b -> buildOctaneBranchForUpdate(b, idPicker)).collect(Collectors.toList());
+            entitiesService.updateEntities(workspaceId, EntityConstants.ScmRepository.COLLECTION_NAME, toUpdate);
+            logConsumer.accept("Updated branches : " + toUpdate.size());
+        }
+        if (!result.getCreated().isEmpty()) {
+            List<Entity> toCreate = result.getCreated().stream().map(b -> buildOctaneBranchForCreate(finalRootId, b, repoShortName, idPicker)).collect(Collectors.toList());
+            entitiesService.postEntities(workspaceId, EntityConstants.ScmRepository.COLLECTION_NAME, toCreate);
+            logConsumer.accept("New branches : " + toCreate.size());
+        }
+
+        return result;
+    }
+
+    private Entity createCSMRepositoryRoot(BranchFetchParameters fp, String repoShortName, Long workspaceId) {
+        Entity entity = DTOFactory.getInstance().newDTO(Entity.class);
+        entity.setType(EntityConstants.ScmRepositoryRoot.ENTITY_NAME);
+        entity.setField(EntityConstants.ScmRepositoryRoot.URL_FIELD, fp.getRepoUrl());
+        entity.setField(EntityConstants.ScmRepositoryRoot.NAME_FIELD, repoShortName);
+        entity.setField(EntityConstants.ScmRepositoryRoot.SCM_TYPE_FIELD, SCMType.GIT.getOctaneId());
+        List<Entity> results = entitiesService.postEntities(workspaceId, EntityConstants.ScmRepositoryRoot.COLLECTION_NAME, Arrays.asList(entity));
+
+        return results.get(0);
+
     }
 
     private String getOctaneBranchName(Entity octaneBranch) {
@@ -217,19 +259,19 @@ final class PullRequestAndBranchServiceImpl implements PullRequestAndBranchServi
         return shortBranchName;
     }
 
-    private Entity buildOctaneBranchForUpdateAsDeleted(Entity octaneBranch) {
+    private Entity buildOctaneBranchForUpdateAsDeleted(Branch branch) {
         Entity entity = DTOFactory.getInstance().newDTO(Entity.class);
         entity.setType(EntityConstants.ScmRepository.ENTITY_NAME);
-        entity.setId(octaneBranch.getId());
+        entity.setId(branch.getOctaneId());
         entity.setField(EntityConstants.ScmRepository.IS_DELETED_FIELD, true);
         return entity;
     }
 
-    private Entity buildOctaneBranchForUpdate(Entity octaneBranch, Branch ciBranch, CommitUserIdPicker idPicker) {
+    private Entity buildOctaneBranchForUpdate(Branch ciBranch, CommitUserIdPicker idPicker) {
         Entity entity = DTOFactory.getInstance().newDTO(Entity.class);
         entity.setType(EntityConstants.ScmRepository.ENTITY_NAME);
-        if (octaneBranch != null) {
-            entity.setId(octaneBranch.getId());
+        if (ciBranch.getOctaneId() != null) {
+            entity.setId(ciBranch.getOctaneId());
         }
 
         entity.setField(EntityConstants.ScmRepository.IS_MERGED_FIELD, ciBranch.getIsMerged());
@@ -239,14 +281,15 @@ final class PullRequestAndBranchServiceImpl implements PullRequestAndBranchServi
         return entity;
     }
 
-    private Entity buildOctaneBranchForCreate(String rootId, Branch ciBranch, CommitUserIdPicker idPicker) {
+    private Entity buildOctaneBranchForCreate(String rootId, Branch ciBranch, String repoShortName, CommitUserIdPicker idPicker) {
         Entity parent = DTOFactory.getInstance().newDTO(Entity.class);
         parent.setType(EntityConstants.ScmRepositoryRoot.ENTITY_NAME);
         parent.setId(rootId);
 
-        Entity entity = buildOctaneBranchForUpdate(null, ciBranch, idPicker);
+        Entity entity = buildOctaneBranchForUpdate(ciBranch, idPicker);
         entity.setField(EntityConstants.ScmRepository.BRANCH_FIELD, ciBranch.getName());
         entity.setField(EntityConstants.ScmRepository.PARENT_FIELD, parent);
+        entity.setField(EntityConstants.ScmRepository.NAME_FIELD, repoShortName + ":" + ciBranch.getName());
         return entity;
     }
 

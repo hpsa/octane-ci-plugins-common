@@ -26,10 +26,7 @@ import com.hp.octane.integrations.services.pullrequestsandbranches.rest.authenti
 import org.apache.http.HttpStatus;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -255,10 +252,5 @@ public class BitbucketServerFetchHandler extends FetchHandler {
     @Override
     protected String parseRequestError(OctaneResponse response) {
         return JsonConverter.getErrorMessage(response.getBody());
-    }
-
-    @Override
-    protected String getClonePathSSH(String httpClonePath) {
-        return null;
     }
 }

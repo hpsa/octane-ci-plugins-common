@@ -19,7 +19,6 @@ package com.hp.octane.integrations.dto.scm;
 import com.hp.octane.integrations.dto.DTOBase;
 
 import java.io.Serializable;
-import java.util.List;
 
 /**
  * SCMCommit DTO
@@ -27,27 +26,35 @@ import java.util.List;
 @SuppressWarnings({"unused"})
 public interface Branch extends DTOBase, Serializable {
 
-	String getName();
+    String getName();
 
-	Branch setName(String name);
+    Branch setName(String name);
 
-	Boolean getIsMerged();
+    Boolean getIsMerged();
 
-	Branch setIsMerged(boolean isMerged);
+    Branch setIsMerged(boolean isMerged);
 
-	String getLastCommitSHA();
+    String getLastCommitSHA();
 
-	Branch setLastCommitSHA(String lastCommitSHA);
+    Branch setLastCommitSHA(String lastCommitSHA);
 
-	Long getLastCommitTime();
+    Long getLastCommitTime();
 
-	Branch setLastCommitTime(Long lastCommitTime);
+    Branch setLastCommitTime(Long lastCommitTime);
 
-	String getLastCommiterName();
+    String getLastCommiterName();
 
-	Branch setLastCommiterName(String lastCommiterName);
+    Branch setLastCommiterName(String lastCommiterName);
 
-	String getLastCommiterEmail();
+    String getLastCommiterEmail();
 
-	Branch setLastCommiterEmail(String lastCommiterEmail);
+    Branch setLastCommiterEmail(String lastCommiterEmail);
+
+    boolean isPartial();
+
+    Branch setPartial(boolean partial);
+
+    String getOctaneId();
+
+    Branch setOctaneId(String octaneId);
 }

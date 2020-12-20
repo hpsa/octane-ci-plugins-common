@@ -18,20 +18,10 @@ package com.hp.octane.integrations.services.pullrequestsandbranches.github.pojo;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Repo extends Entity {
+public class Branch extends Entity implements SupportUpdatedTime {
 
     private String name;
-    private String clone_url;
-    private String default_branch;
-    private String ssh_url;
-
-    public String getClone_url() {
-        return clone_url;
-    }
-
-    public void setClone_url(String clone_url) {
-        this.clone_url = clone_url;
-    }
+    private Commit commit;
 
     public String getName() {
         return name;
@@ -41,19 +31,16 @@ public class Repo extends Entity {
         this.name = name;
     }
 
-    public String getDefault_branch() {
-        return default_branch;
+    @Override
+    public long getUpdatedTime() {
+        return 0;
     }
 
-    public void setDefault_branch(String default_branch) {
-        this.default_branch = default_branch;
+    public Commit getCommit() {
+        return commit;
     }
 
-    public String getSsh_url() {
-        return ssh_url;
-    }
-
-    public void setSsh_url(String ssh_url) {
-        this.ssh_url = ssh_url;
+    public void setCommit(Commit commit) {
+        this.commit = commit;
     }
 }

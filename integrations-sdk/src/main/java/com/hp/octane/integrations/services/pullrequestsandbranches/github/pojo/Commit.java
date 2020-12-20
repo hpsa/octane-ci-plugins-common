@@ -25,6 +25,7 @@ import java.util.List;
 public class Commit extends Entity implements SupportUpdatedTime {
 
     private String sha;
+    private String url;
     private CommitDetails commit;
     private List<CommitParent> parents;
 
@@ -62,5 +63,13 @@ public class Commit extends Entity implements SupportUpdatedTime {
             updatedTime = l == null ? 0 : l;
         }
         return updatedTime;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
     }
 }

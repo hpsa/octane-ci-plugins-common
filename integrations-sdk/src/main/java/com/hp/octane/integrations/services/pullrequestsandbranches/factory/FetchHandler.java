@@ -28,6 +28,7 @@ import org.apache.http.conn.HttpHostConnectException;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Consumer;
 
 public abstract class FetchHandler {
@@ -46,8 +47,6 @@ public abstract class FetchHandler {
     protected abstract String getRepoApiPath(String clonePath);
 
     protected abstract String parseRequestError(OctaneResponse response);
-
-    protected abstract String getClonePathSSH (String httpClonePath);
 
     public boolean pingRepository(String repoApiBaseUrl, Consumer<String> logConsumer) throws IOException {
         OctaneRequest request = dtoFactory.newDTO(OctaneRequest.class).setUrl(repoApiBaseUrl).setMethod(HttpMethod.GET);

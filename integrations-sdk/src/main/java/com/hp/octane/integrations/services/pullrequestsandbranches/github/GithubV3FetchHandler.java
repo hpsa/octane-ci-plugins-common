@@ -1,18 +1,18 @@
 
 package com.hp.octane.integrations.services.pullrequestsandbranches.github;
 
+import com.hp.octane.integrations.dto.DTOFactory;
 import com.hp.octane.integrations.dto.connectivity.HttpMethod;
 import com.hp.octane.integrations.dto.connectivity.OctaneRequest;
 import com.hp.octane.integrations.dto.connectivity.OctaneResponse;
-import com.hp.octane.integrations.dto.scm.Branch;
 import com.hp.octane.integrations.dto.scm.SCMRepository;
 import com.hp.octane.integrations.dto.scm.SCMType;
 import com.hp.octane.integrations.services.pullrequestsandbranches.factory.*;
 import com.hp.octane.integrations.services.pullrequestsandbranches.github.pojo.*;
 import com.hp.octane.integrations.services.pullrequestsandbranches.rest.authentication.AuthenticationStrategy;
+import org.apache.http.HttpStatus;
 
 import java.io.IOException;
-import java.time.Instant;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.regex.Pattern;
@@ -26,23 +26,75 @@ public abstract class GithubV3FetchHandler extends FetchHandler {
         super(authenticationStrategy);
     }
 
+    private static final long NO_MIN_UPDATE_TIME = 0;
+
     @Override
     protected String parseRequestError(OctaneResponse response) {
         return JsonConverter.getErrorMessage(response.getBody());
     }
 
     @Override
-    public List<Branch> fetchBranches(BranchFetchParameters parameters, Consumer<String> logger) throws IOException {
-        return null;
+    public List<com.hp.octane.integrations.dto.scm.Branch> fetchBranches(BranchFetchParameters parameters, Consumer<String> logConsumer) throws IOException {
+        List<com.hp.octane.integrations.dto.scm.Branch> result = new ArrayList<>();
+        String baseUrl = getRepoApiPath(parameters.getRepoUrl());
+        String apiUrl = getApiPath(parameters.getRepoUrl());
+        logConsumer.accept(this.getClass().getSimpleName() + " handler, Base url : " + baseUrl);
+        pingRepository(baseUrl, logConsumer);
+        RateLimitationInfo rateLimitationInfo = getRateLimitationInfo(apiUrl, logConsumer);
+
+        String branchesUrl = baseUrl + "/branches";
+        logConsumer.accept("Branches url : " + branchesUrl);
+        List<Branch> branches = getPagedEntities(branchesUrl, Branch.class, parameters.getPageSize(), Integer.MAX_VALUE, NO_MIN_UPDATE_TIME);
+
+        Repo repo = getEntity(baseUrl, Repo.class);
+
+        branches.forEach(br -> {
+            if (rateLimitationInfo == null || rateLimitationInfo.getRemaining() > 10) {
+
+                String urlCompareBranchUrl = String.format("%s/compare/%s...%s", baseUrl, repo.getDefault_branch(), br.getName());
+                Compare compare = getEntity(urlCompareBranchUrl, Compare.class);
+
+                Commit lastCommit = getEntity(br.getCommit().getUrl(), Commit.class, rateLimitationInfo);
+                result.add(convertToDTOBranch(br, lastCommit, compare));
+            } else {
+                result.add(convertToDTOBranch(br, null, null));
+            }
+        });
+
+        getRateLimitationInfo(apiUrl, logConsumer);
+        logConsumer.accept("Fetching branches is done");
+        return result;
     }
+
+    protected abstract String getApiPath(String repoHttpCloneUrl);
+
+    private com.hp.octane.integrations.dto.scm.Branch convertToDTOBranch(Branch branch, Commit lastCommit, Compare compare) {
+        com.hp.octane.integrations.dto.scm.Branch branchDTO = DTOFactory.getInstance().newDTO(com.hp.octane.integrations.dto.scm.Branch.class)
+                .setName(branch.getName())
+                .setLastCommitSHA(branch.getCommit().getSha());
+
+        if (lastCommit != null && compare != null) {
+            branchDTO
+                    .setLastCommitTime(FetchUtils.convertISO8601DateStringToLong(lastCommit.getCommit().getCommitter().getDate()))
+                    .setLastCommiterName(lastCommit.getCommit().getAuthor().getName())
+                    .setLastCommiterEmail(lastCommit.getCommit().getAuthor().getEmail())
+                    .setIsMerged(compare.getAhead_by() == 0);
+        } else {
+            branchDTO.setPartial(true);
+        }
+        return branchDTO;
+    }
+
 
     @Override
     public List<com.hp.octane.integrations.dto.scm.PullRequest> fetchPullRequests(PullRequestFetchParameters parameters, CommitUserIdPicker commitUserIdPicker, Consumer<String> logConsumer) throws IOException {
 
         List<com.hp.octane.integrations.dto.scm.PullRequest> result = new ArrayList<>();
         String baseUrl = getRepoApiPath(parameters.getRepoUrl());
+        String apiUrl = getApiPath(parameters.getRepoUrl());
         logConsumer.accept(this.getClass().getSimpleName() + " handler, Base url : " + baseUrl);
         pingRepository(baseUrl, logConsumer);
+        getRateLimitationInfo(apiUrl, logConsumer);
 
         String pullRequestsUrl = baseUrl + "/pulls?state=all";
         logConsumer.accept("Pull requests url : " + pullRequestsUrl);
@@ -125,6 +177,7 @@ public abstract class GithubV3FetchHandler extends FetchHandler {
                 counter++;
             }
             logConsumer.accept("Fetching commits is done");
+            getRateLimitationInfo(apiUrl, logConsumer);
             logConsumer.accept("Pull requests are ready");
         } else {
             logConsumer.accept("No new/updated PR is found.");
@@ -138,6 +191,37 @@ public abstract class GithubV3FetchHandler extends FetchHandler {
                 .setUrl(ref.getRepo() != null ? ref.getRepo().getClone_url() : "unknown repository")
                 .setBranch(ref.getRef())
                 .setType(SCMType.GIT);
+    }
+
+    /**
+     * RE
+     *
+     * @param baseUrl
+     * @param logConsumer
+     * @return
+     * @throws IOException
+     */
+    private RateLimitationInfo getRateLimitationInfo(String baseUrl, Consumer<String> logConsumer) throws IOException {
+        String rateUrl = baseUrl + "/rate_limit";
+        OctaneRequest request = dtoFactory.newDTO(OctaneRequest.class).setUrl(rateUrl).setMethod(HttpMethod.GET);
+        OctaneResponse response = restClient.executeRequest(request);
+        if (response.getStatus() == HttpStatus.SC_OK && response.getHeaders().containsKey("X-RateLimit-Limit")) {
+            RateLimitationInfo info = new RateLimitationInfo();
+            fillRateLimitationInfo(response, info);
+
+            long minToNextReset = (info.getReset() - System.currentTimeMillis() / 1000) / 60;
+            logConsumer.accept(String.format("RateLimit Info: Limit-%s; Remaining-%s; Reset in %s min. ", info.getLimit(), info.getRemaining(), minToNextReset));
+            return info;
+        } else {
+            return null;
+        }
+    }
+
+    private void fillRateLimitationInfo(OctaneResponse response, RateLimitationInfo info) {
+        info.setLimit(Integer.parseInt(response.getHeaders().get("X-RateLimit-Limit")))
+                .setRemaining(Integer.parseInt(response.getHeaders().get("X-RateLimit-Remaining")))
+                .setUsed(Integer.parseInt(response.getHeaders().get("X-RateLimit-Used")))
+                .setReset(Long.parseLong(response.getHeaders().get("X-RateLimit-Reset")));
     }
 
     /***
@@ -187,10 +271,19 @@ public abstract class GithubV3FetchHandler extends FetchHandler {
         }
     }
 
+
     private <T extends Entity> T getEntity(String url, Class<T> entityType) {
+        return getEntity(url, entityType, null);
+    }
+
+    private <T extends Entity> T getEntity(String url, Class<T> entityType, RateLimitationInfo rateLimitationInfo) {
         try {
             OctaneRequest request = dtoFactory.newDTO(OctaneRequest.class).setUrl(url).setMethod(HttpMethod.GET);
             OctaneResponse response = restClient.executeRequest(request);
+
+            if (rateLimitationInfo != null) {
+                fillRateLimitationInfo(response, rateLimitationInfo);
+            }
             return JsonConverter.convert(response.getBody(), entityType);
         } catch (Exception e) {
             throw new RuntimeException("Failed to getEntity : " + e.getMessage(), e);

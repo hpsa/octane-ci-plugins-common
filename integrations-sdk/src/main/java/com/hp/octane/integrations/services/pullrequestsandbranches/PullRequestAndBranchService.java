@@ -22,6 +22,7 @@ import com.hp.octane.integrations.dto.scm.PullRequest;
 import com.hp.octane.integrations.services.entities.EntitiesService;
 import com.hp.octane.integrations.services.pullrequestsandbranches.factory.BranchFetchParameters;
 import com.hp.octane.integrations.services.pullrequestsandbranches.factory.CommitUserIdPicker;
+import com.hp.octane.integrations.services.pullrequestsandbranches.factory.FetchHandler;
 import com.hp.octane.integrations.services.pullrequestsandbranches.factory.PullRequestFetchParameters;
 import com.hp.octane.integrations.services.rest.RestService;
 
@@ -48,5 +49,5 @@ public interface PullRequestAndBranchService {
 
     long getPullRequestLastUpdateTime(String workspaceId, String repoUrl);
 
-    void syncBranchesToOctane(List<Branch> ciServerBranches, BranchFetchParameters fp, Long workspaceId, CommitUserIdPicker idPicker, Consumer<String> logConsumer);
+    BranchSyncResult syncBranchesToOctane(FetchHandler fetcherHandler, BranchFetchParameters fp, Long workspaceId, CommitUserIdPicker idPicker, Consumer<String> logConsumer) throws IOException;
 }

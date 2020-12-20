@@ -25,12 +25,14 @@ import com.hp.octane.integrations.dto.scm.Branch;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class BranchImpl implements Branch {
 
+    private String octaneId;
     private String name;
     private Boolean isMerged;
     private String lastCommitSHA;
     private Long lastCommitTime;
     private String lastCommiterName;
     private String lastCommiterEmail;
+    private boolean isPartial = false;
 
     @Override
     public String getName() {
@@ -95,6 +97,27 @@ public class BranchImpl implements Branch {
     @Override
     public Branch setLastCommiterEmail(String lastCommiterEmail) {
         this.lastCommiterEmail = lastCommiterEmail;
+        return this;
+    }
+    @Override
+    public boolean isPartial() {
+        return isPartial;
+    }
+
+    @Override
+    public Branch setPartial(boolean partial) {
+        isPartial = partial;
+        return this;
+    }
+
+    @Override
+    public String getOctaneId() {
+        return octaneId;
+    }
+
+    @Override
+    public Branch setOctaneId(String octaneId) {
+        this.octaneId = octaneId;
         return this;
     }
 }

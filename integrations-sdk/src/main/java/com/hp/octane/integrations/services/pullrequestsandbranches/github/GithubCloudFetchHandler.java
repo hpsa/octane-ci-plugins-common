@@ -54,9 +54,7 @@ public class GithubCloudFetchHandler extends GithubV3FetchHandler {
     }
 
     @Override
-    protected String getClonePathSSH(String httpClonePath) {
-        //git@github.com:radislavB/simple-tests.git
-        //https://github.com/radislavB/simple-tests.git
-        return httpClonePath.replace("https://github.com/", "git@github.com:");
+    protected String getApiPath(String repoHttpCloneUrl) {
+        return "https://api.github.com";
     }
 }

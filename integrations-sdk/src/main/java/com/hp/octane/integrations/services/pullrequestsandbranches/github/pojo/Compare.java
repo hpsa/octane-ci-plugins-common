@@ -18,42 +18,33 @@ package com.hp.octane.integrations.services.pullrequestsandbranches.github.pojo;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Repo extends Entity {
+public class Compare extends Entity {
 
-    private String name;
-    private String clone_url;
-    private String default_branch;
-    private String ssh_url;
+    private String status;
+    private long ahead_by;
+    private long behind_by;
 
-    public String getClone_url() {
-        return clone_url;
+    public String getStatus() {
+        return status;
     }
 
-    public void setClone_url(String clone_url) {
-        this.clone_url = clone_url;
+    public void setStatus(String status) {
+        this.status = status;
     }
 
-    public String getName() {
-        return name;
+    public long getAhead_by() {
+        return ahead_by;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setAhead_by(long ahead_by) {
+        this.ahead_by = ahead_by;
     }
 
-    public String getDefault_branch() {
-        return default_branch;
+    public long getBehind_by() {
+        return behind_by;
     }
 
-    public void setDefault_branch(String default_branch) {
-        this.default_branch = default_branch;
-    }
-
-    public String getSsh_url() {
-        return ssh_url;
-    }
-
-    public void setSsh_url(String ssh_url) {
-        this.ssh_url = ssh_url;
+    public void setBehind_by(long behind_by) {
+        this.behind_by = behind_by;
     }
 }

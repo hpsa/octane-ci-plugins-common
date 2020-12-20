@@ -21,7 +21,7 @@ import com.hp.octane.integrations.services.pullrequestsandbranches.factory.Fetch
 import com.hp.octane.integrations.services.pullrequestsandbranches.github.GithubV3FetchHandler;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class PullRequest extends Entity implements SupportUpdatedTime {
+public class  PullRequest extends Entity implements SupportUpdatedTime {
     private int number;
     private String htmlUrl;
     private String commitsUrl;
