@@ -34,7 +34,8 @@ public abstract class GithubV3FetchHandler extends FetchHandler {
     }
 
     @Override
-    public List<com.hp.octane.integrations.dto.scm.Branch> fetchBranches(BranchFetchParameters parameters, Consumer<String> logConsumer) throws IOException {
+    public List<com.hp.octane.integrations.dto.scm.Branch> fetchBranches(BranchFetchParameters parameters, Map<String, String> octaneBranches2ShaToIgnoreIfShaNotChanged, Consumer<String> logConsumer) throws IOException {
+
         List<com.hp.octane.integrations.dto.scm.Branch> result = new ArrayList<>();
         String baseUrl = getRepoApiPath(parameters.getRepoUrl());
         String apiUrl = getApiPath(parameters.getRepoUrl());
@@ -47,23 +48,48 @@ public abstract class GithubV3FetchHandler extends FetchHandler {
         List<Branch> branches = getPagedEntities(branchesUrl, Branch.class, parameters.getPageSize(), Integer.MAX_VALUE, NO_MIN_UPDATE_TIME);
 
         Repo repo = getEntity(baseUrl, Repo.class);
+        List<Branch> branchesToFill = branches.stream().filter(ciBranch -> !isSkipBranch(octaneBranches2ShaToIgnoreIfShaNotChanged, ciBranch, logConsumer)).collect(Collectors.toList());
+        List<Branch> branchesToSkip = branches.stream().filter(ciBranch -> isSkipBranch(octaneBranches2ShaToIgnoreIfShaNotChanged, ciBranch, null)).collect(Collectors.toList());
 
-        branches.forEach(br -> {
-            if (rateLimitationInfo == null || rateLimitationInfo.getRemaining() > 10) {
+        logConsumer.accept(String.format("Fetching branch information, found %s branches, while %s are skipped as they already exist in ALM Octane (merged or not active for long time)", branches.size(), branchesToSkip.size()));
+        boolean rateLimitationActivated = false;
+        for (int i = 0; i < branchesToFill.size(); i++) {
+            Branch current = branchesToFill.get(i);
 
-                String urlCompareBranchUrl = String.format("%s/compare/%s...%s", baseUrl, repo.getDefault_branch(), br.getName());
+            if (rateLimitationInfo == null || rateLimitationInfo.getRemaining() > 2) {
+                String urlCompareBranchUrl = String.format("%s/compare/%s...%s", baseUrl, repo.getDefault_branch(), current.getName());
                 Compare compare = getEntity(urlCompareBranchUrl, Compare.class);
 
-                Commit lastCommit = getEntity(br.getCommit().getUrl(), Commit.class, rateLimitationInfo);
-                result.add(convertToDTOBranch(br, lastCommit, compare));
+                Commit lastCommit = getEntity(current.getCommit().getUrl(), Commit.class, rateLimitationInfo);
+                result.add(convertToDTOBranch(current, lastCommit, compare));
             } else {
-                result.add(convertToDTOBranch(br, null, null));
+                if(!rateLimitationActivated){
+                    rateLimitationActivated = true;
+                    logConsumer.accept(String.format("Skipping fetching because of rate limit. First skipped branch '%s'. Number of skipped branches - %s.)", branches.size(), (branches.size() - i  +1)));
+                }
+                result.add(convertToDTOBranch(current, null, null));
             }
-        });
+            if (!rateLimitationActivated && i > 0 && i % 40 == 0 ) {
+                logConsumer.accept("Fetching branch information " + i * 100 / branchesToFill.size() + "%");
+            }
+        }
+
+        //add skipped branches also , they are used to recognized deleted branches
+        branchesToSkip.forEach(b->result.add(convertToDTOBranch(b, null, null)));
 
         getRateLimitationInfo(apiUrl, logConsumer);
         logConsumer.accept("Fetching branches is done");
         return result;
+    }
+
+    private boolean isSkipBranch(Map<String, String> octaneBranches2ShaToIgnoreIfShaNotChanged, Branch ciBranch, Consumer<String> logConsumer) {
+        boolean skip = octaneBranches2ShaToIgnoreIfShaNotChanged.containsKey(ciBranch.getName()) &&
+                ciBranch.getCommit().getSha().equals(octaneBranches2ShaToIgnoreIfShaNotChanged.get(ciBranch.getName()));
+        if (logConsumer!=null && skip) {
+            logConsumer.accept("Branch is skipped : " + ciBranch.getName());
+        }
+
+        return skip;
     }
 
     protected abstract String getApiPath(String repoHttpCloneUrl);

@@ -113,7 +113,7 @@ public class BitbucketServerFetchHandler extends FetchHandler {
     }
 
     @Override
-    public List<com.hp.octane.integrations.dto.scm.Branch> fetchBranches(BranchFetchParameters parameters, Consumer<String> logConsumer) throws IOException {
+    public List<com.hp.octane.integrations.dto.scm.Branch> fetchBranches(BranchFetchParameters parameters, Map<String, String> octaneBranches2ShaToIgnoreIfShaNotChanged, Consumer<String> logConsumer) throws IOException {
         // List<com.hp.octane.integrations.dto.scm.> result = new ArrayList<>();
         String baseUrl = getRepoApiPath(parameters.getRepoUrl());
         logConsumer.accept("BitbucketServerRestHandler, Base url : " + baseUrl);

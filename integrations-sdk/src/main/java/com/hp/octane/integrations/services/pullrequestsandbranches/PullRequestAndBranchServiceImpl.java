@@ -155,10 +155,6 @@ final class PullRequestAndBranchServiceImpl implements PullRequestAndBranchServi
 
     @Override
     public BranchSyncResult syncBranchesToOctane(FetchHandler fetcherHandler, BranchFetchParameters fp, Long workspaceId, CommitUserIdPicker idPicker, Consumer<String> logConsumer) throws IOException {
-        //FETCH FROM CI SERVER
-        List<Branch> ciServerBranches = fetcherHandler.fetchBranches(fp, logConsumer);
-
-        Map<String, Branch> ciServerBranchMap = ciServerBranches.stream().collect(Collectors.toMap(Branch::getName, Function.identity()));
 
         //GET BRANCHES FROM OCTANE
         String repoShortName = FetchUtils.getRepoShortName(fp.getRepoUrl());
@@ -179,6 +175,10 @@ final class PullRequestAndBranchServiceImpl implements PullRequestAndBranchServi
         }
         Map<String, List<Entity>> octaneBranchMap = octaneBranches.stream().collect(groupingBy(b -> getOctaneBranchName(b)));
 
+        //FETCH FROM CI SERVER
+        List<Branch> ciServerBranches = fetcherHandler.fetchBranches(fp, getBranchesToIgnoreIfShaNotChanged(fp, octaneBranches), logConsumer);
+        Map<String, Branch> ciServerBranchMap = ciServerBranches.stream().collect(Collectors.toMap(Branch::getName, Function.identity()));
+
         //GENERATE UPDATES
         String finalRootId = rootId;
         BranchSyncResult result = new BranchSyncResult();
@@ -191,12 +191,8 @@ final class PullRequestAndBranchServiceImpl implements PullRequestAndBranchServi
 
         //NEW AND UPDATES
         ciServerBranches.forEach(ciBranch -> {
-            //SKIP if branch is partial (it can happen because of rate limitations)
             if (ciBranch.isPartial()) {
-                if (!result.getHasSkipped()) {
-                    result.setHasSkipped(true);
-                    result.setFirstSkipped(ciBranch.getName());
-                }
+                //SKIP if branch is partial (it can happen because of rate limitations or because branch is merged to master or not active for long time)
                 return;
             }
             List<Entity> octaneBranchList = octaneBranchMap.get(ciBranch.getName());
@@ -233,8 +229,30 @@ final class PullRequestAndBranchServiceImpl implements PullRequestAndBranchServi
             entitiesService.postEntities(workspaceId, EntityConstants.ScmRepository.COLLECTION_NAME, toCreate);
             logConsumer.accept("New branches : " + toCreate.size());
         }
+        if(result.getDeleted().isEmpty() && result.getUpdated().isEmpty() && result.getCreated().isEmpty()){
+            logConsumer.accept("No changes are found.");
+        }
 
         return result;
+    }
+
+    private Map<String, String> getBranchesToIgnoreIfShaNotChanged(BranchFetchParameters fp, List<Entity> octaneBranches) {
+        Map<String, String> octaneBranchToSkip = octaneBranches.stream().filter(br -> {
+            Boolean isMerged = (Boolean) br.getField(EntityConstants.ScmRepository.IS_MERGED_FIELD);
+            Long lastCommitDate = FetchUtils.convertISO8601DateStringToLong((String) br.getField(EntityConstants.ScmRepository.LAST_COMMIT_TIME_FIELD));
+            if (isMerged != null && lastCommitDate != null) {
+                if (isMerged) {
+                    return true;
+                }
+                long daysPast = TimeUnit.MILLISECONDS.toDays(System.currentTimeMillis() - lastCommitDate);
+                if (fp.getActiveBranchDays() > daysPast) {
+                    return true;
+                }
+
+            }
+            return false;
+        }).collect(Collectors.toMap(b -> getOctaneBranchName(b), b -> (String) b.getField(EntityConstants.ScmRepository.LAST_COMMIT_SHA_FIELD)));
+        return octaneBranchToSkip;
     }
 
     private Entity createCSMRepositoryRoot(BranchFetchParameters fp, String repoShortName, Long workspaceId) {
