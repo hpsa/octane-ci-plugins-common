@@ -22,9 +22,11 @@ public class BranchFetchParameters implements Serializable {
     private String filter;
     private Integer pageSize;
     private Integer activeBranchDays;
+    private Integer maxBranchesToFill;
 
     public static final int DEFAULT_PAGE_SIZE = 1000;
-    public static final int ACTIVE_BRANCH_DAYS = 100;
+    public static final int DEFAULT_MAX_BRANCHES_TO_FILL = 1000;
+    public static final int DEFAULT_ACTIVE_BRANCH_DAYS = 180;
 
     public String getRepoUrl() {
         return repoUrl;
@@ -44,8 +46,18 @@ public class BranchFetchParameters implements Serializable {
         return this;
     }
 
+    public int getMaxBranchesToFill() {
+
+        return maxBranchesToFill == null ? DEFAULT_MAX_BRANCHES_TO_FILL : maxBranchesToFill;
+    }
+
+    public BranchFetchParameters setMaxBranchesToFill(Integer maxBranchesToFill) {
+        this.maxBranchesToFill = maxBranchesToFill;
+        return this;
+    }
+
     public int getActiveBranchDays() {
-        return activeBranchDays == null ? ACTIVE_BRANCH_DAYS : activeBranchDays;
+        return activeBranchDays == null ? DEFAULT_ACTIVE_BRANCH_DAYS : activeBranchDays;
     }
 
     public BranchFetchParameters setActiveBranchDays(Integer activeBranchDays) {

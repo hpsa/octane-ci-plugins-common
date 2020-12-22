@@ -14,6 +14,7 @@ import org.apache.http.HttpStatus;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -34,83 +35,73 @@ public abstract class GithubV3FetchHandler extends FetchHandler {
     }
 
     @Override
-    public List<com.hp.octane.integrations.dto.scm.Branch> fetchBranches(BranchFetchParameters parameters, Map<String, String> octaneBranches2ShaToIgnoreIfShaNotChanged, Consumer<String> logConsumer) throws IOException {
+    public List<com.hp.octane.integrations.dto.scm.Branch> fetchBranches(BranchFetchParameters fp, Map<String, Long> sha2DateMapCache, Consumer<String> logConsumer) throws IOException {
 
         List<com.hp.octane.integrations.dto.scm.Branch> result = new ArrayList<>();
-        String baseUrl = getRepoApiPath(parameters.getRepoUrl());
-        String apiUrl = getApiPath(parameters.getRepoUrl());
+        String baseUrl = getRepoApiPath(fp.getRepoUrl());
+        String apiUrl = getApiPath(fp.getRepoUrl());
         logConsumer.accept(this.getClass().getSimpleName() + " handler, Base url : " + baseUrl);
         pingRepository(baseUrl, logConsumer);
         RateLimitationInfo rateLimitationInfo = getRateLimitationInfo(apiUrl, logConsumer);
 
         String branchesUrl = baseUrl + "/branches";
         logConsumer.accept("Branches url : " + branchesUrl);
-        List<Branch> branches = getPagedEntities(branchesUrl, Branch.class, parameters.getPageSize(), Integer.MAX_VALUE, NO_MIN_UPDATE_TIME);
+        List<Branch> branches = getPagedEntities(branchesUrl, Branch.class, fp.getPageSize(), Integer.MAX_VALUE, NO_MIN_UPDATE_TIME);
 
         Repo repo = getEntity(baseUrl, Repo.class);
-        List<Branch> branchesToFill = branches.stream().filter(ciBranch -> !isSkipBranch(octaneBranches2ShaToIgnoreIfShaNotChanged, ciBranch, logConsumer)).collect(Collectors.toList());
-        List<Branch> branchesToSkip = branches.stream().filter(ciBranch -> isSkipBranch(octaneBranches2ShaToIgnoreIfShaNotChanged, ciBranch, null)).collect(Collectors.toList());
 
-        logConsumer.accept(String.format("Fetching branch information, found %s branches, while %s are skipped as they already exist in ALM Octane (merged or not active for long time)", branches.size(), branchesToSkip.size()));
-        boolean rateLimitationActivated = false;
-        for (int i = 0; i < branchesToFill.size(); i++) {
-            Branch current = branchesToFill.get(i);
+        logConsumer.accept(String.format("Fetching branch information, found %s branches", branches.size()));
+        long outdatedTime = System.currentTimeMillis() - TimeUnit.DAYS.toMillis(fp.getActiveBranchDays());
+        int fetched = 0;
+        int rateLimited = 0;
+        int outdated = 0;
+        int counter = 0;
+        int notificationNumber = Math.max(40, branches.size() * 5 / 100);//every x branches - we will print message to console, x max of (5% of branches , 40 brances)
+        for (Branch branch : branches) {
+            counter++;
+            com.hp.octane.integrations.dto.scm.Branch branchDTO = DTOFactory.getInstance().newDTO(com.hp.octane.integrations.dto.scm.Branch.class)
+                    .setName(branch.getName())
+                    .setLastCommitSHA(branch.getCommit().getSha())
+                    .setPartial(true);
+            result.add(branchDTO);
 
-            if (rateLimitationInfo == null || rateLimitationInfo.getRemaining() > 2) {
-                String urlCompareBranchUrl = String.format("%s/compare/%s...%s", baseUrl, repo.getDefault_branch(), current.getName());
-                Compare compare = getEntity(urlCompareBranchUrl, Compare.class);
-
-                Commit lastCommit = getEntity(current.getCommit().getUrl(), Commit.class, rateLimitationInfo);
-                result.add(convertToDTOBranch(current, lastCommit, compare));
-            } else {
-                if(!rateLimitationActivated){
-                    rateLimitationActivated = true;
-                    logConsumer.accept(String.format("Skipping fetching because of rate limit. First skipped branch '%s'. Number of skipped branches - %s.)", branches.size(), (branches.size() - i  +1)));
+            if (sha2DateMapCache != null && sha2DateMapCache.containsKey(branchDTO.getLastCommitSHA())) {
+                branchDTO.setLastCommitTime(sha2DateMapCache.get(branchDTO.getLastCommitSHA()));
+                if (branchDTO.getLastCommitTime() < outdatedTime) {
+                    outdated++;
+                    continue;
                 }
-                result.add(convertToDTOBranch(current, null, null));
             }
-            if (!rateLimitationActivated && i > 0 && i % 40 == 0 ) {
-                logConsumer.accept("Fetching branch information " + i * 100 / branchesToFill.size() + "%");
+
+            if (rateLimitationInfo == null || rateLimitationInfo.getRemaining() > 2 || fetched <= fp.getMaxBranchesToFill()) {
+                String urlCompareBranchUrl = String.format("%s/compare/%s...%s", baseUrl, repo.getDefault_branch(), branch.getName());
+                Compare compare = getEntity(urlCompareBranchUrl, Compare.class);
+                Commit lastCommit = getEntity(branch.getCommit().getUrl(), Commit.class, rateLimitationInfo);
+                branchDTO
+                        .setLastCommitTime(FetchUtils.convertISO8601DateStringToLong(lastCommit.getCommit().getCommitter().getDate()))
+                        .setLastCommiterName(lastCommit.getCommit().getAuthor().getName())
+                        .setLastCommiterEmail(lastCommit.getCommit().getAuthor().getEmail())
+                        .setIsMerged(compare.getAhead_by() == 0)
+                        .setPartial(false);
+                fetched++;
+            } else {
+                if (rateLimited == 0) {
+                    logConsumer.accept(String.format("Skipping fetching because of rate limit. First skipped branch '%s'.)", branchDTO.getName()));
+                }
+                rateLimited++;
+            }
+
+            if (rateLimited == 0 && counter > 0 && counter % notificationNumber == 0) {
+                logConsumer.accept("Fetching branch information " + counter * 100 / branches.size() + "%");
             }
         }
 
-        //add skipped branches also , they are used to recognized deleted branches
-        branchesToSkip.forEach(b->result.add(convertToDTOBranch(b, null, null)));
-
         getRateLimitationInfo(apiUrl, logConsumer);
-        logConsumer.accept("Fetching branches is done");
+        logConsumer.accept(String.format("Fetching branches is done, fetched %s, skipped as outdated %s, skipped because of max limit/rate limit %s", fetched, outdated, rateLimited));
         return result;
     }
 
-    private boolean isSkipBranch(Map<String, String> octaneBranches2ShaToIgnoreIfShaNotChanged, Branch ciBranch, Consumer<String> logConsumer) {
-        boolean skip = octaneBranches2ShaToIgnoreIfShaNotChanged.containsKey(ciBranch.getName()) &&
-                ciBranch.getCommit().getSha().equals(octaneBranches2ShaToIgnoreIfShaNotChanged.get(ciBranch.getName()));
-        if (logConsumer!=null && skip) {
-            logConsumer.accept("Branch is skipped : " + ciBranch.getName());
-        }
-
-        return skip;
-    }
-
     protected abstract String getApiPath(String repoHttpCloneUrl);
-
-    private com.hp.octane.integrations.dto.scm.Branch convertToDTOBranch(Branch branch, Commit lastCommit, Compare compare) {
-        com.hp.octane.integrations.dto.scm.Branch branchDTO = DTOFactory.getInstance().newDTO(com.hp.octane.integrations.dto.scm.Branch.class)
-                .setName(branch.getName())
-                .setLastCommitSHA(branch.getCommit().getSha());
-
-        if (lastCommit != null && compare != null) {
-            branchDTO
-                    .setLastCommitTime(FetchUtils.convertISO8601DateStringToLong(lastCommit.getCommit().getCommitter().getDate()))
-                    .setLastCommiterName(lastCommit.getCommit().getAuthor().getName())
-                    .setLastCommiterEmail(lastCommit.getCommit().getAuthor().getEmail())
-                    .setIsMerged(compare.getAhead_by() == 0);
-        } else {
-            branchDTO.setPartial(true);
-        }
-        return branchDTO;
-    }
-
 
     @Override
     public List<com.hp.octane.integrations.dto.scm.PullRequest> fetchPullRequests(PullRequestFetchParameters parameters, CommitUserIdPicker commitUserIdPicker, Consumer<String> logConsumer) throws IOException {

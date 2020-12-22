@@ -19,7 +19,6 @@ import com.hp.octane.integrations.dto.DTOFactory;
 import com.hp.octane.integrations.dto.connectivity.HttpMethod;
 import com.hp.octane.integrations.dto.connectivity.OctaneRequest;
 import com.hp.octane.integrations.dto.connectivity.OctaneResponse;
-import com.hp.octane.integrations.dto.entities.Entity;
 import com.hp.octane.integrations.dto.scm.Branch;
 import com.hp.octane.integrations.dto.scm.PullRequest;
 import com.hp.octane.integrations.services.pullrequestsandbranches.rest.GeneralRestClient;
@@ -43,7 +42,7 @@ public abstract class FetchHandler {
 
     public abstract List<PullRequest> fetchPullRequests(PullRequestFetchParameters parameters, CommitUserIdPicker commitUserIdPicker, Consumer<String> logger) throws IOException;
 
-    public abstract List<Branch> fetchBranches(BranchFetchParameters parameters, Map<String, String> octaneBranches2ShaToIgnoreIfShaNotChanged, Consumer<String> logger) throws IOException;
+    public abstract List<Branch> fetchBranches(BranchFetchParameters parameters, Map<String, Long> sha2DateMapCache, Consumer<String> logger) throws IOException;
 
     protected abstract String getRepoApiPath(String clonePath);
 

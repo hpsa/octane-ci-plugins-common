@@ -16,6 +16,7 @@
 package com.hp.octane.integrations.services.pullrequestsandbranches;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -32,6 +33,7 @@ import com.hp.octane.integrations.dto.scm.SCMType;
 import com.hp.octane.integrations.services.entities.EntitiesService;
 import com.hp.octane.integrations.services.entities.QueryHelper;
 import com.hp.octane.integrations.services.pullrequestsandbranches.factory.*;
+import com.hp.octane.integrations.services.pullrequestsandbranches.github.GithubV3FetchHandler;
 import com.hp.octane.integrations.services.rest.RestService;
 import org.apache.commons.collections4.ListUtils;
 import org.apache.http.HttpStatus;
@@ -156,6 +158,19 @@ final class PullRequestAndBranchServiceImpl implements PullRequestAndBranchServi
     @Override
     public BranchSyncResult syncBranchesToOctane(FetchHandler fetcherHandler, BranchFetchParameters fp, Long workspaceId, CommitUserIdPicker idPicker, Consumer<String> logConsumer) throws IOException {
 
+        boolean supportCaching = fetcherHandler instanceof GithubV3FetchHandler;
+        Map<String,Long> sha2DateMapCache=null;
+        if(supportCaching){
+            TypeReference<HashMap<String, Long>> typeRef
+                    = new TypeReference<HashMap<String, Long>>() {};
+            sha2DateMapCache = objectMapper.readValue(getFileForBranchCaching(fp.getRepoUrl()), typeRef);
+        }
+
+        //FETCH FROM CI SERVER
+        List<Branch> ciServerBranches = fetcherHandler.fetchBranches(fp, sha2DateMapCache, logConsumer);
+        Map<String, Branch> ciServerBranchMap = ciServerBranches.stream().collect(Collectors.toMap(Branch::getName, Function.identity()));
+
+
         //GET BRANCHES FROM OCTANE
         String repoShortName = FetchUtils.getRepoShortName(fp.getRepoUrl());
         List<Entity> roots = getRepositoryRoots(fp, workspaceId);
@@ -175,9 +190,7 @@ final class PullRequestAndBranchServiceImpl implements PullRequestAndBranchServi
         }
         Map<String, List<Entity>> octaneBranchMap = octaneBranches.stream().collect(groupingBy(b -> getOctaneBranchName(b)));
 
-        //FETCH FROM CI SERVER
-        List<Branch> ciServerBranches = fetcherHandler.fetchBranches(fp, getBranchesToIgnoreIfShaNotChanged(fp, octaneBranches), logConsumer);
-        Map<String, Branch> ciServerBranchMap = ciServerBranches.stream().collect(Collectors.toMap(Branch::getName, Function.identity()));
+
 
         //GENERATE UPDATES
         String finalRootId = rootId;
@@ -229,30 +242,19 @@ final class PullRequestAndBranchServiceImpl implements PullRequestAndBranchServi
             entitiesService.postEntities(workspaceId, EntityConstants.ScmRepository.COLLECTION_NAME, toCreate);
             logConsumer.accept("New branches : " + toCreate.size());
         }
-        if(result.getDeleted().isEmpty() && result.getUpdated().isEmpty() && result.getCreated().isEmpty()){
+        if (result.getDeleted().isEmpty() && result.getUpdated().isEmpty() && result.getCreated().isEmpty()) {
             logConsumer.accept("No changes are found.");
         }
 
         return result;
     }
 
-    private Map<String, String> getBranchesToIgnoreIfShaNotChanged(BranchFetchParameters fp, List<Entity> octaneBranches) {
-        Map<String, String> octaneBranchToSkip = octaneBranches.stream().filter(br -> {
-            Boolean isMerged = (Boolean) br.getField(EntityConstants.ScmRepository.IS_MERGED_FIELD);
-            Long lastCommitDate = FetchUtils.convertISO8601DateStringToLong((String) br.getField(EntityConstants.ScmRepository.LAST_COMMIT_TIME_FIELD));
-            if (isMerged != null && lastCommitDate != null) {
-                if (isMerged) {
-                    return true;
-                }
-                long daysPast = TimeUnit.MILLISECONDS.toDays(System.currentTimeMillis() - lastCommitDate);
-                if (fp.getActiveBranchDays() > daysPast) {
-                    return true;
-                }
+    private File getFileForBranchCaching(String url) {
+        String urlReplacement = url.replace(":", "_").replace("/", "_").replaceAll("[<>:\"/\\|?*]", "_");
 
-            }
-            return false;
-        }).collect(Collectors.toMap(b -> getOctaneBranchName(b), b -> (String) b.getField(EntityConstants.ScmRepository.LAST_COMMIT_SHA_FIELD)));
-        return octaneBranchToSkip;
+        String path = configurer.pluginServices.getAllowedOctaneStorage() + "nga" + File.separator + configurer.octaneConfiguration.getInstanceId() +
+                File.separator + "branchCache_" + urlReplacement;
+        return new File(path);
     }
 
     private Entity createCSMRepositoryRoot(BranchFetchParameters fp, String repoShortName, Long workspaceId) {
