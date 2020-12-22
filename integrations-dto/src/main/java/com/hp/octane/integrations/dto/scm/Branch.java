@@ -38,6 +38,10 @@ public interface Branch extends DTOBase, Serializable {
 
     Branch setLastCommitSHA(String lastCommitSHA);
 
+    String getLastCommitUrl();
+
+    Branch setLastCommitUrl(String lastCommitUrl);
+
     Long getLastCommitTime();
 
     Branch setLastCommitTime(Long lastCommitTime);

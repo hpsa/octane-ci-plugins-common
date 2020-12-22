@@ -36,8 +36,6 @@ public abstract class GithubV3FetchHandler extends FetchHandler {
 
     @Override
     public List<com.hp.octane.integrations.dto.scm.Branch> fetchBranches(BranchFetchParameters fp, Map<String, Long> sha2DateMapCache, Consumer<String> logConsumer) throws IOException {
-
-        List<com.hp.octane.integrations.dto.scm.Branch> result = new ArrayList<>();
         String baseUrl = getRepoApiPath(fp.getRepoUrl());
         String apiUrl = getApiPath(fp.getRepoUrl());
         logConsumer.accept(this.getClass().getSimpleName() + " handler, Base url : " + baseUrl);
@@ -47,27 +45,29 @@ public abstract class GithubV3FetchHandler extends FetchHandler {
         String branchesUrl = baseUrl + "/branches";
         logConsumer.accept("Branches url : " + branchesUrl);
         List<Branch> branches = getPagedEntities(branchesUrl, Branch.class, fp.getPageSize(), Integer.MAX_VALUE, NO_MIN_UPDATE_TIME);
+        List<Pattern> filterPatterns = FetchUtils.buildPatterns(fp.getFilter());
+        List<com.hp.octane.integrations.dto.scm.Branch> filteredBranches = branches.stream()
+                .filter(br -> FetchUtils.isBranchMatch(filterPatterns, br.getName()))
+                .map((br -> convertToDTOBranch(br)))
+                .collect(Collectors.toList());
+        logConsumer.accept(String.format("Found %d branches, while %d are matching filters", branches.size(), filteredBranches.size()));
 
+        //find repo to know default branch
         Repo repo = getEntity(baseUrl, Repo.class);
 
-        logConsumer.accept(String.format("Fetching branch information, found %s branches", branches.size()));
+        //fill branches
         long outdatedTime = System.currentTimeMillis() - TimeUnit.DAYS.toMillis(fp.getActiveBranchDays());
         int fetched = 0;
         int rateLimited = 0;
         int outdated = 0;
         int counter = 0;
-        int notificationNumber = Math.max(40, branches.size() * 5 / 100);//every x branches - we will print message to console, x max of (5% of branches , 40 brances)
-        for (Branch branch : branches) {
+        int notificationNumber = Math.max(40, filteredBranches.size() * 5 / 100);//every x branches - we will print message to console, x max of (5% of branches , 40 brances)
+        for (com.hp.octane.integrations.dto.scm.Branch branch : filteredBranches) {
             counter++;
-            com.hp.octane.integrations.dto.scm.Branch branchDTO = DTOFactory.getInstance().newDTO(com.hp.octane.integrations.dto.scm.Branch.class)
-                    .setName(branch.getName())
-                    .setLastCommitSHA(branch.getCommit().getSha())
-                    .setPartial(true);
-            result.add(branchDTO);
 
-            if (sha2DateMapCache != null && sha2DateMapCache.containsKey(branchDTO.getLastCommitSHA())) {
-                branchDTO.setLastCommitTime(sha2DateMapCache.get(branchDTO.getLastCommitSHA()));
-                if (branchDTO.getLastCommitTime() < outdatedTime) {
+            if (sha2DateMapCache != null && sha2DateMapCache.containsKey(branch.getLastCommitSHA())) {
+                branch.setLastCommitTime(sha2DateMapCache.get(branch.getLastCommitSHA()));
+                if (branch.getLastCommitTime() < outdatedTime) {
                     outdated++;
                     continue;
                 }
@@ -76,8 +76,8 @@ public abstract class GithubV3FetchHandler extends FetchHandler {
             if (rateLimitationInfo == null || rateLimitationInfo.getRemaining() > 2 || fetched <= fp.getMaxBranchesToFill()) {
                 String urlCompareBranchUrl = String.format("%s/compare/%s...%s", baseUrl, repo.getDefault_branch(), branch.getName());
                 Compare compare = getEntity(urlCompareBranchUrl, Compare.class);
-                Commit lastCommit = getEntity(branch.getCommit().getUrl(), Commit.class, rateLimitationInfo);
-                branchDTO
+                Commit lastCommit = getEntity(branch.getLastCommitUrl(), Commit.class, rateLimitationInfo);
+                branch
                         .setLastCommitTime(FetchUtils.convertISO8601DateStringToLong(lastCommit.getCommit().getCommitter().getDate()))
                         .setLastCommiterName(lastCommit.getCommit().getAuthor().getName())
                         .setLastCommiterEmail(lastCommit.getCommit().getAuthor().getEmail())
@@ -86,19 +86,27 @@ public abstract class GithubV3FetchHandler extends FetchHandler {
                 fetched++;
             } else {
                 if (rateLimited == 0) {
-                    logConsumer.accept(String.format("Skipping fetching because of rate limit. First skipped branch '%s'.)", branchDTO.getName()));
+                    logConsumer.accept(String.format("Skipping fetching because of rate limit. First skipped branch '%s'.)", branch.getName()));
                 }
                 rateLimited++;
             }
 
             if (rateLimited == 0 && counter > 0 && counter % notificationNumber == 0) {
-                logConsumer.accept("Fetching branch information " + counter * 100 / branches.size() + "%");
+                logConsumer.accept("Fetching branch information " + counter * 100 / filteredBranches.size() + "%");
             }
         }
 
         getRateLimitationInfo(apiUrl, logConsumer);
         logConsumer.accept(String.format("Fetching branches is done, fetched %s, skipped as outdated %s, skipped because of max limit/rate limit %s", fetched, outdated, rateLimited));
-        return result;
+        return filteredBranches;
+    }
+
+    private com.hp.octane.integrations.dto.scm.Branch convertToDTOBranch(Branch branch) {
+        return DTOFactory.getInstance().newDTO(com.hp.octane.integrations.dto.scm.Branch.class)
+                        .setName(branch.getName())
+                        .setLastCommitSHA(branch.getCommit().getSha())
+                        .setLastCommitUrl(branch.getCommit().getUrl())
+                        .setPartial(true);
     }
 
     protected abstract String getApiPath(String repoHttpCloneUrl);

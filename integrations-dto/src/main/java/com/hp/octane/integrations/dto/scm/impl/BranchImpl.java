@@ -29,6 +29,7 @@ public class BranchImpl implements Branch {
     private String name;
     private Boolean isMerged;
     private String lastCommitSHA;
+    private String lastCommitUrl;
     private Long lastCommitTime;
     private String lastCommiterName;
     private String lastCommiterEmail;
@@ -68,6 +69,17 @@ public class BranchImpl implements Branch {
     }
 
     @Override
+    public String getLastCommitUrl() {
+        return lastCommitUrl;
+    }
+
+    @Override
+    public Branch setLastCommitUrl(String lastCommitUrl) {
+        this.lastCommitUrl = lastCommitUrl;
+        return this;
+    }
+
+    @Override
     public Long getLastCommitTime() {
         return lastCommitTime;
     }
@@ -99,6 +111,7 @@ public class BranchImpl implements Branch {
         this.lastCommiterEmail = lastCommiterEmail;
         return this;
     }
+
     @Override
     public boolean isPartial() {
         return isPartial;
