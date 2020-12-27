@@ -73,7 +73,7 @@ public abstract class GithubV3FetchHandler extends FetchHandler {
                 }
             }
 
-            if (rateLimitationInfo == null || rateLimitationInfo.getRemaining() > 2 || fetched <= fp.getMaxBranchesToFill()) {
+            if ((rateLimitationInfo == null || rateLimitationInfo.getRemaining() > 2) && fetched < fp.getMaxBranchesToFill()) {
                 String urlCompareBranchUrl = String.format("%s/compare/%s...%s", baseUrl, repo.getDefault_branch(), branch.getName());
                 Compare compare = getEntity(urlCompareBranchUrl, Compare.class);
                 Commit lastCommit = getEntity(branch.getLastCommitUrl(), Commit.class, rateLimitationInfo);
@@ -103,10 +103,10 @@ public abstract class GithubV3FetchHandler extends FetchHandler {
 
     private com.hp.octane.integrations.dto.scm.Branch convertToDTOBranch(Branch branch) {
         return DTOFactory.getInstance().newDTO(com.hp.octane.integrations.dto.scm.Branch.class)
-                        .setName(branch.getName())
-                        .setLastCommitSHA(branch.getCommit().getSha())
-                        .setLastCommitUrl(branch.getCommit().getUrl())
-                        .setPartial(true);
+                .setName(branch.getName())
+                .setLastCommitSHA(branch.getCommit().getSha())
+                .setLastCommitUrl(branch.getCommit().getUrl())
+                .setPartial(true);
     }
 
     protected abstract String getApiPath(String repoHttpCloneUrl);
