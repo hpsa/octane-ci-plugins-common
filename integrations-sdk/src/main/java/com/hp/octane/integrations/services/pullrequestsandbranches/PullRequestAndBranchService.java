@@ -38,7 +38,7 @@ public interface PullRequestAndBranchService {
      *
      * @param configurer  SDK services configurer object
      * @param restService Rest Service
-     * @param entitiesService
+     * @param entitiesService Entities Service
      * @return initialized service
      */
     static PullRequestAndBranchService newInstance(OctaneSDK.SDKServicesConfigurer configurer, RestService restService, EntitiesService entitiesService) {

@@ -73,8 +73,8 @@ public class FetchUtils {
     /**
      * Parse ISO8601DateString (format:YYYY-MM-DDTHH:MM:SSZ) to long
      *
-     * @param dateStr
-     * @return
+     * @param dateStr String to convert
+     * @return long represents date
      */
     public static Long convertISO8601DateStringToLong(String dateStr) {
         if (dateStr == null || dateStr.isEmpty()) {
@@ -87,17 +87,20 @@ public class FetchUtils {
     /**
      * return in ISO 8601 format:YYYY-MM-DDTHH:MM:SSZ
      *
-     * @param date
-     * @return
+     * @param date date to convert to String format
+     * @return formated string
      */
     public static String convertLongToISO8601DateString(long date) {
         return Instant.ofEpochMilli(date).toString();
     }
 
-    /***
-     * https://github.houston.softwaregrp.net/Octane/syncx.git=>Octane/syncx.git
+    /**
+     * Get short name of repository : repo owner/repo_name
+     * @param url repo url from which to take short name
+     * @return repo short name
      */
     public static String getRepoShortName(String url) {
+        //https://github.houston.softwaregrp.net/Octane/syncx.git=>Octane/syncx.git
         String patternStr = "^.*[/:](.*/.*)$";
         Pattern pattern = Pattern.compile(patternStr);
         Matcher matcher = pattern.matcher(url);
