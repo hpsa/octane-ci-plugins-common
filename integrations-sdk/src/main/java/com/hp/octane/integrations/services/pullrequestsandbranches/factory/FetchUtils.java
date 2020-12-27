@@ -25,6 +25,8 @@ import java.util.regex.Pattern;
 
 public class FetchUtils {
 
+    private static String REGEX_PREFIX = "regex:";
+
     /**
      * This function build compiled patters
      *
@@ -34,10 +36,18 @@ public class FetchUtils {
     public static List<Pattern> buildPatterns(String patterns) {
         List<Pattern> compiledPatterns = new LinkedList<>();
         if (SdkStringUtils.isNotEmpty(patterns)) {
-            String[] patternsArr = patterns.split("[|]");
-            for (String str : patternsArr) {
-                if (!str.trim().isEmpty()) {
-                    compiledPatterns.add(Pattern.compile(str.trim().replace(".", "\\.").replace("*", ".*")));
+            if (patterns.toLowerCase().startsWith(REGEX_PREFIX)) {
+                String pattern = patterns.substring(REGEX_PREFIX.length()).trim();
+                if (!pattern.isEmpty()) {
+                    compiledPatterns.add(Pattern.compile(pattern));
+                }
+            } else {
+                String[] patternsArr = patterns.split("[|]");
+                for (String str : patternsArr) {
+                    String pattern = str.trim();
+                    if (!pattern.isEmpty()) {
+                        compiledPatterns.add(Pattern.compile(pattern.replace(".", "\\.").replace("*", ".*"), Pattern.CASE_INSENSITIVE));
+                    }
                 }
             }
         }
@@ -62,6 +72,7 @@ public class FetchUtils {
 
     /**
      * Parse ISO8601DateString (format:YYYY-MM-DDTHH:MM:SSZ) to long
+     *
      * @param dateStr
      * @return
      */
@@ -75,6 +86,7 @@ public class FetchUtils {
 
     /**
      * return in ISO 8601 format:YYYY-MM-DDTHH:MM:SSZ
+     *
      * @param date
      * @return
      */
@@ -85,7 +97,7 @@ public class FetchUtils {
     /***
      * https://github.houston.softwaregrp.net/Octane/syncx.git=>Octane/syncx.git
      */
-    public static String getRepoShortName(String url){
+    public static String getRepoShortName(String url) {
         String patternStr = "^.*[/:](.*/.*)$";
         Pattern pattern = Pattern.compile(patternStr);
         Matcher matcher = pattern.matcher(url);
