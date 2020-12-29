@@ -26,7 +26,7 @@ public class BranchFetchParameters implements Serializable {
 
     public static final int DEFAULT_PAGE_SIZE = 1000;
     public static final int DEFAULT_MAX_BRANCHES_TO_FILL = 1000;
-    public static final int DEFAULT_ACTIVE_BRANCH_DAYS = 180;
+    public static final int DEFAULT_ACTIVE_BRANCH_DAYS = 90;
 
     public String getRepoUrl() {
         return repoUrl;
