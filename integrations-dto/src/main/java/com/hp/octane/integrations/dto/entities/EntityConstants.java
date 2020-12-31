@@ -42,7 +42,7 @@ public class EntityConstants {
         public static final String LAST_COMMIT_SHA_FIELD = "last_commit_revision";
         public static final String LAST_COMMIT_TIME_FIELD = "last_commit_time";
         public static final String SCM_USER_FIELD = "scm_user";
-
+        public static final String SCM_USER_EMAIL_FIELD = "scm_user_email";
     }
 
     public static class ScmRepositoryRoot extends Base {
