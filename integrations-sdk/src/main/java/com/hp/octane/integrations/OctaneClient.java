@@ -148,4 +148,6 @@ public interface OctaneClient extends HasMetrics {
 	 * @return service, MUST NOT be null
 	 */
 	SCMDataService getSCMDataService();
+
+	void validateOctaneIsActiveAndSupportVersion(String version);
 }

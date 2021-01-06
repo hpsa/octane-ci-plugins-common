@@ -247,6 +247,20 @@ final class OctaneClientImpl implements OctaneClient {
     }
 
     @Override
+    public void validateOctaneIsActiveAndSupportVersion(String version) {
+        if (this.getConfigurationService().isConnected()) {
+            throw new RuntimeException("ALM Octane is not connected.");
+        }
+        if (configurer.octaneConfiguration.isSuspended()) {
+            throw new RuntimeException("ALM Octane is suspended.");
+        }
+        if (!this.getConfigurationService().isOctaneVersionGreaterOrEqual(version)) {
+            throw new RuntimeException(String.format("Required ALM Octane version is %s, but connected ALM Octane has lower version %s.", version,
+                    this.getConfigurationService().getOctaneConnectivityStatus().getOctaneVersion()));
+        }
+    }
+
+    @Override
     public String toString() {
         return "OctaneClientImpl{ instanceId: " + configurer.octaneConfiguration.getInstanceId() + " }";
     }

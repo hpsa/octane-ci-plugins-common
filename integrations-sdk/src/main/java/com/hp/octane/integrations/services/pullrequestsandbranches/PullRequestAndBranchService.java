@@ -33,6 +33,9 @@ import java.util.function.Consumer;
 
 public interface PullRequestAndBranchService {
 
+    String  PULL_REQUEST_COLLECTION_SUPPORTED_VERSION = "15.0.48";
+    String  BRANCH_COLLECTION_SUPPORTED_VERSION = "15.1.61";
+
     /**
      * Service instance producer - for internal usage only (protected by inaccessible configurer)
      *
