@@ -116,7 +116,6 @@ final class PullRequestAndBranchServiceImpl implements PullRequestAndBranchServi
     public void sendPullRequests(List<PullRequest> pullRequests, String workspaceId, PullRequestFetchParameters pullRequestFetchParameters, Consumer<String> logConsumer) throws IOException {
         Map<String, String> headers = new LinkedHashMap<>();
         headers.put(RestService.CONTENT_TYPE_HEADER, ContentType.APPLICATION_JSON.getMimeType());
-        logConsumer.accept("Sending to ALM Octane : " + configurer.octaneConfiguration.geLocationForLog() + ", workspace " + workspaceId);
 
         String url = configurer.octaneConfiguration.getUrl() +
                 RestService.SHARED_SPACE_API_PATH_PART + configurer.octaneConfiguration.getSharedSpace() +
@@ -237,7 +236,6 @@ final class PullRequestAndBranchServiceImpl implements PullRequestAndBranchServi
         });
 
         //SEND TO OCTANE
-        logConsumer.accept(String.format("Sending to ALM Octane : %s, workspace  %s", configurer.octaneConfiguration.geLocationForLog(), workspaceId));
         if (!result.getDeleted().isEmpty()) {
             List<Entity> toDelete = result.getDeleted().stream().map(b -> buildOctaneBranchForUpdateAsDeleted(b)).collect(Collectors.toList());
             entitiesService.updateEntities(workspaceId, EntityConstants.ScmRepository.COLLECTION_NAME, toDelete);
