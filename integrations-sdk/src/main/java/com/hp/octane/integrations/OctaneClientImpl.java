@@ -17,6 +17,7 @@ package com.hp.octane.integrations;
 
 import com.hp.octane.integrations.dto.general.OctaneConnectivityStatus;
 import com.hp.octane.integrations.exceptions.OctaneConnectivityException;
+import com.hp.octane.integrations.exceptions.OctaneValidateException;
 import com.hp.octane.integrations.services.bridge.BridgeService;
 import com.hp.octane.integrations.services.configuration.ConfigurationService;
 import com.hp.octane.integrations.services.coverage.CoverageService;
@@ -249,13 +250,13 @@ final class OctaneClientImpl implements OctaneClient {
     @Override
     public void validateOctaneIsActiveAndSupportVersion(String version) {
         if (!this.getConfigurationService().isConnected()) {
-            throw new RuntimeException("ALM Octane is not connected.");
+            throw new OctaneValidateException("ALM Octane is not connected.");
         }
         if (configurer.octaneConfiguration.isSuspended()) {
-            throw new RuntimeException("ALM Octane is suspended.");
+            throw new OctaneValidateException("ALM Octane is suspended.");
         }
         if (!this.getConfigurationService().isOctaneVersionGreaterOrEqual(version)) {
-            throw new RuntimeException(String.format("Required ALM Octane version is %s, but connected ALM Octane has lower version %s.", version,
+            throw new OctaneValidateException(String.format("Required ALM Octane version is %s, but connected ALM Octane has lower version %s.", version,
                     this.getConfigurationService().getOctaneConnectivityStatus().getOctaneVersion()));
         }
     }
