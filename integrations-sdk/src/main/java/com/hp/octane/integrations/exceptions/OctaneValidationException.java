@@ -15,9 +15,9 @@
 
 package com.hp.octane.integrations.exceptions;
 
-public class OctaneValidateException extends RuntimeException {
+public class OctaneValidationException extends RuntimeException {
 
-	public OctaneValidateException(String message) {
+	public OctaneValidationException(String message) {
 		super(message);
 	}
 }
