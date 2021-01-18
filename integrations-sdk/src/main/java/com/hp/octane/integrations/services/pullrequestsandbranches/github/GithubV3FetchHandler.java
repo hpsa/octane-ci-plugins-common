@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -243,10 +244,21 @@ public abstract class GithubV3FetchHandler extends FetchHandler {
     }
 
     private void fillRateLimitationInfo(OctaneResponse response, RateLimitationInfo info) {
-        info.setLimit(Integer.parseInt(response.getHeaders().get("X-RateLimit-Limit")))
-                .setRemaining(Integer.parseInt(response.getHeaders().get("X-RateLimit-Remaining")))
-                .setUsed(Integer.parseInt(response.getHeaders().get("X-RateLimit-Used")))
-                .setReset(Long.parseLong(response.getHeaders().get("X-RateLimit-Reset")));
+        Map<String, String> toLowerCaseMapping = response.getHeaders().keySet().stream().collect(Collectors.toMap(String::toLowerCase, Function.identity()));
+        int limit = (int) getRateLimitationInfoValue("X-RateLimit-Limit", toLowerCaseMapping, response);
+        int remaining = (int) getRateLimitationInfoValue("X-RateLimit-Remaining", toLowerCaseMapping, response);
+        int used = (int) getRateLimitationInfoValue("X-RateLimit-Used", toLowerCaseMapping, response);
+        long reset = getRateLimitationInfoValue("X-RateLimit-Reset", toLowerCaseMapping, response);
+        info.setLimit(limit).setRemaining(remaining).setUsed(used).setReset(reset);
+    }
+
+    private long getRateLimitationInfoValue(String key, Map<String, String> toLowerCaseMapping, OctaneResponse response) {
+        String actualKey = toLowerCaseMapping.get(key.toLowerCase());
+        if (actualKey != null) {
+            return Long.parseLong(response.getHeaders().get(actualKey));
+        } else {
+            return 0L;
+        }
     }
 
     /***
