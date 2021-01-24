@@ -7,6 +7,7 @@ import com.hp.octane.integrations.dto.connectivity.OctaneRequest;
 import com.hp.octane.integrations.dto.connectivity.OctaneResponse;
 import com.hp.octane.integrations.dto.scm.SCMRepository;
 import com.hp.octane.integrations.dto.scm.SCMType;
+import com.hp.octane.integrations.exceptions.ResourceNotFoundException;
 import com.hp.octane.integrations.services.pullrequestsandbranches.factory.*;
 import com.hp.octane.integrations.services.pullrequestsandbranches.github.pojo.*;
 import com.hp.octane.integrations.services.pullrequestsandbranches.rest.authentication.AuthenticationStrategy;
@@ -75,7 +76,7 @@ public abstract class GithubV3FetchHandler extends FetchHandler {
             }
 
             if ((rateLimitationInfo == null || rateLimitationInfo.getRemaining() > 2) && fetched < fp.getMaxBranchesToFill()) {
-                String urlCompareBranchUrl = String.format("%s/compare/%s...%s", baseUrl, repo.getDefault_branch(), branch.getName());
+                String urlCompareBranchUrl = String.format("%s/compare/%s...%s", baseUrl, repo.getDefault_branch(), branch.getLastCommitSHA());
                 Compare compare = getEntity(urlCompareBranchUrl, Compare.class);
                 Commit lastCommit = getEntity(branch.getLastCommitUrl(), Commit.class, rateLimitationInfo);
                 branch
@@ -317,11 +318,16 @@ public abstract class GithubV3FetchHandler extends FetchHandler {
         try {
             OctaneRequest request = dtoFactory.newDTO(OctaneRequest.class).setUrl(url).setMethod(HttpMethod.GET);
             OctaneResponse response = restClient.executeRequest(request);
+            if (response.getStatus() == HttpStatus.SC_NOT_FOUND) {
+                throw new ResourceNotFoundException(String.format("URL %s not found", url));
+            }
 
             if (rateLimitationInfo != null) {
                 fillRateLimitationInfo(response, rateLimitationInfo);
             }
             return JsonConverter.convert(response.getBody(), entityType);
+        } catch (ResourceNotFoundException notFoundException) {
+            throw notFoundException;
         } catch (Exception e) {
             throw new RuntimeException("Failed to getEntity : " + e.getMessage(), e);
         }
