@@ -16,7 +16,7 @@
 		<httpclient.version>4.5.10</httpclient.version>
 		<squareup-tape.version>1.2.3</squareup-tape.version>
 
-		<jetty-server.version>9.4.35.v20201120</jetty-server.version>
+		<jetty-server.version>9.4.38.v20210224</jetty-server.version>
 		<poi.version>4.0.1</poi.version>
 	</properties>
 
