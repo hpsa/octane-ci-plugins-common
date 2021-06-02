@@ -89,7 +89,7 @@ public class SCMChangeImpl implements SCMChange {
 	 * we want to enrich the new renamed file as part of the SCMChange.
 	 * this field will be filled as part of the lines enrichment process
 	 *
-	 * @param renamedToFile
+	 * @param renamedToFile name of renamed file
 	 */
 	@Override
 	public void setRenamedToFile(String renamedToFile) {
