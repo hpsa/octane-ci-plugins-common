@@ -46,10 +46,7 @@
 					<configuration>
 						<sourcepath>${basedir}/src/main/java/com/hp/octane/integrations/dto</sourcepath>
 						<excludePackageNames>*.impl</excludePackageNames>
-						<sourceFileExcludes>
-							<exclude>DTOBase.java</exclude>
-							<exclude>DTOInternalProviderBase.java</exclude>
-						</sourceFileExcludes>
+						<source>8</source>
 					</configuration>
 				</plugin>
 			</plugins>
@@ -69,6 +66,7 @@
 						<artifactId>maven-javadoc-plugin</artifactId>
 						<groupId>org.apache.maven.plugins</groupId>
 						<configuration>
+							<source>8</source>
 							<sourcepath>${basedir}/src/main/java/com/hp/octane/integrations</sourcepath>
 							<sourceFileExcludes>
 								<sourceFileExclude>*Impl.java</sourceFileExclude>

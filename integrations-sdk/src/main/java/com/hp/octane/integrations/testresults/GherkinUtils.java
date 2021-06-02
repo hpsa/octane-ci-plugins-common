@@ -56,7 +56,7 @@ public class GherkinUtils {
      * @param folder folder to search
      * @param fileTemplate for example GherkinResults_%s
      * @param counterStart     initial file index
-     * @return
+     * @return list of found files
      */
 
     public static List<File> findGherkinFilesByTemplateWithCounter(String folder, String fileTemplate, int counterStart) {

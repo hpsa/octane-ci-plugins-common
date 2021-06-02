@@ -114,6 +114,7 @@
 					<sourceFileExcludes>
 						<sourceFileExclude>*Impl.java</sourceFileExclude>
 					</sourceFileExcludes>
+					<source>8</source>
 				</configuration>
 			</plugin>
 		</plugins>

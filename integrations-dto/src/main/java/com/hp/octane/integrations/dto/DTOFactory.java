@@ -203,8 +203,8 @@ public final class DTOFactory {
 
 	/***
 	 * For bamboo plugin, input and output factories are created in another classloader
-	 * @param xmlInputFactory
-	 * @param xmlOutputFactory
+	 * @param xmlInputFactory xmlInputFactory
+	 * @param xmlOutputFactory xmlOutputFactory
 	 */
 	public void initXmlMapper(XMLInputFactory xmlInputFactory, XMLOutputFactory xmlOutputFactory){
 		configuration.initXmlMapper(xmlInputFactory, xmlOutputFactory);

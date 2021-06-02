@@ -186,7 +186,7 @@ public class UftTestDiscoveryUtils {
      * Note : UFT API test doesn't contain description
      *
      * @param dirPath  path of UFT test
-     * @param testType
+     * @param testType GUI or API
      * @return test description
      */
     public static String getTestDescription(File dirPath, UftTestType testType) {

@@ -35,6 +35,8 @@ public interface XmlWritableTestResult {
 
   /**
    * Writes an XML element from the test result
+   * @param writer xml stream writer
+   * @throws XMLStreamException
    */
   void writeXmlElement(XMLStreamWriter writer) throws XMLStreamException;
 }
