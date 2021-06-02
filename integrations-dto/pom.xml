@@ -67,10 +67,6 @@
 						<groupId>org.apache.maven.plugins</groupId>
 						<configuration>
 							<source>8</source>
-							<sourcepath>${basedir}/src/main/java/com/hp/octane/integrations</sourcepath>
-							<sourceFileExcludes>
-								<sourceFileExclude>*Impl.java</sourceFileExclude>
-							</sourceFileExcludes>
 						</configuration>
 					</plugin>
 				</plugins>
