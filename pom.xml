@@ -138,15 +138,6 @@
 					</executions>
 				</plugin>
 				<plugin>
-					<artifactId>maven-javadoc-plugin</artifactId>
-					<groupId>org.apache.maven.plugins</groupId>
-					<version>${maven-javadoc-plugin.version}</version>
-					<configuration>
-						<excludePackageNames>*.impl</excludePackageNames>
-						<additionalparam>-Xdoclint:none</additionalparam>
-					</configuration>
-				</plugin>
-				<plugin>
 					<artifactId>maven-install-plugin</artifactId>
 					<groupId>org.apache.maven.plugins</groupId>
 					<version>${maven-install-plugin.verion}</version>
