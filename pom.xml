@@ -141,7 +141,6 @@
 					<groupId>org.apache.maven.plugins</groupId>
 					<version>${maven-javadoc-plugin.version}</version>
 					<configuration>
-						<excludePackageNames>*.impl</excludePackageNames>
 						<source>8</source>
 					</configuration>
 				</plugin>
