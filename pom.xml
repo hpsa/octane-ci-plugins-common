@@ -143,6 +143,7 @@
 					<version>${maven-javadoc-plugin.version}</version>
 					<configuration>
 						<excludePackageNames>*.impl</excludePackageNames>
+						<additionalparam>-Xdoclint:none</additionalparam>
 					</configuration>
 				</plugin>
 				<plugin>
